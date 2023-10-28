@@ -1,0 +1,235 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+ 
+\usepackage[ngerman]{babel}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+%\usepackage{bbm}
+%\usepackage{dsfont}
+\usepackage{color}
+\usepackage{slashed}
+\usepackage{esint}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathabx}
+\usepackage{changepage}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage{cleveref}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Stoßrohr}
+            
+        
+        \large
+        
+            
+        \vspace{0.7cm}
+            numerische Hydrodynamik
+        \vspace{2cm}
+        
+
+        \textbf{Christian Gommeringer}
+            
+        \vspace*{7cm}
+        
+        
+            
+        
+              
+        
+            
+        
+            
+        \normalsize
+        betreut durch Dr. Christoph Schäfer\\
+        \vspace*{1cm}
+        Tübingen, den 17. November 2022
+        
+            
+    \end{center}
+\end{titlepage}
+
+
+
+\section{Einführung}
+In diesem Versuch befassen wir uns mit einem Problem der numerischen Hydrodynamik. Wir betrachten das eindimensionale Stoßrohr, und möchten hier die Lösung der  Euler Gleichung für eine unstetige Anfangsbedingung numerisch approximieren. Zum Lösen dieser partiellen Differentialgleichungen verwenden wir ein festes räumliches wie auch zeitliches Gitter, sowie die Methode des Operator Splittings. Durch die Einführung neuer kombinierter Größen lassen sich die Euler Gleichungen so umformen, dass sie die Form der einfachsten partiellen Differenzialgleichung mit Inhomogenität hat.
+
+\begin{equation*}\frac{\partial\textbf{u}}{\partial{t}}+\frac{\partial\textbf{f}(\textbf{u})}{\partial{x}}=\textbf{h}\end{equation*}
+Wobei $$\textbf{u}=(\rho,\rho{u},\rho\epsilon)$$
+$$\textbf{f}=(\rho{u},\rho{uu},\rho\epsilon{u})$$ 
+$$\textbf{h}=\left(0,-\frac{\partial{p}}{\partial{x}},-p\,\frac{\partial{u}}{\partial{x}}\right)$$
+
+Durch die oben angesprochene Methode des Operator Splitting wird nun zunächst der homogene Teil integriert. Hierbei wird unter anderem ein erweitertes Upwind-Verfahren angewandt. Ich verwende das van Leer Schema. Mit der Lösung des sogenannten ersten Advektionsschritts wird dann noch eine Korrektur durch den inhomogenen Teil der Euler Gleichungen bewirkt. Im gesamten Verfahren wird, wie angesprochen ein festes räumliches Gitter gewählt. Die Geschwindigkeit wird an den Grenzen der Gitterzellen definiert, und die Dichte und Energie werden im Zentrum der Zellen definiert. Zur geschickten Implementierung unseres Algorithmus führen wir zwei Ghost-Zellen am Anfang und am Ende unseres eindimensionalen Gitters ein. Dabei setzen wir die Werte in diesen Ghost-Zellen zur Erfüllung reflektierender Randbedingungen auf folgende Werte fest.
+
+\begin{table}[H]\begin{tabular}{l c l l c l l c l}
+$u_2$&=&0&$\rho_1$&=&$\rho_2$&$\epsilon_1$&=&$\epsilon_2$\\
+$u_1$&=&$-u_3$&$\rho_0$&=&$\rho_3$&$\epsilon_0$&=&$\epsilon_3$\\
+$u_{N+2}$&=&0&$\rho_{N+2}$&=&$\rho_{N+1}$&$\epsilon_{N+2}$&=&$\epsilon_{N+1}$\\
+$u_{N+3}$&=&$-u_{N+1}$&$\rho_{N+3}$&=&$\rho_N$&$\epsilon_{N+3}$&=&$\epsilon_N$
+\end{tabular}\end{table}
+
+\section{Aufgabe 1}
+In der ersten Aufgabe sollen wir zum Herantasten an den Algorithmus die skalare eindimensionale Transportgleichung lösen. 
+
+\begin{equation*}\frac{\partial\psi}{\partial{t}}+a\,\frac{\partial\psi}{\partial{x}}=0\end{equation*}
+für die Anfangsbedingung
+\begin{equation*}\psi(x,t=0)=\psi_0(x)\end{equation*}
+Dies wird natürlich folgendermaßen gelöst
+$$\psi(x,t)=\psi_0(x-at)$$
+
+Die obige Gleichung soll nun numerisch mit Hilfe des oben angedeuteten Verfahrens gelöst werden, für a=1 und einen Rechenbereich [-1,1] mit periodischen Randbedingungen. Als Start ist vorgegeben
+
+\begin{equation*}\psi(x,t=0)=\biggl\{\begin{array}{l}1.0\;\text{für}\;|x|\leq\frac{1}{3}\\
+0.0\;\text{für}\;\frac{1}{3}<|x|\leq{1}\end{array}\end{equation*}
+
+Diese Anfangsbedingungen sollten integriert werden. Zuerst verwende ich 40 Gitterzellen und integriere über eine Zeitspanne von 4s.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{40.png}\caption{Integrationszeit 4s mit 40 Gitterzellen unter Verwendung des van Leer Schemas}\end{figure}
+
+Hier beträgt die Rechenzeit 0.1s. Dies kann nun mit dem reinen Upwind Verfahren verglichen werden, bei dem die Rechenzeit für meine Implementierung ebenfalls 0.1s beträgt.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{40_upwind.png}\caption{Integrationszeit 4s mit 40 Gitterzellen unter Verwendung des Upwind Schemas}\end{figure}
+
+Es wird deutlich, dass das reine Upwind Verfahren deutlich schneller diffudiert. Das wird für eine Zeitspanne von 400s noch deutlicher.
+
+Eine Erklärung für die Diffusion findet sich in der Betrachtung des allgemeinen Integrationsschemas. 
+$$\psi^{n+1}_j\Delta{x}=\psi^n_j\Delta{x}+\Delta{t}(F_\text{in}-F_\text{out})$$
+Die Flüsse $F$ werden allgemein auf folgende Art berechnet
+\begin{align*}F_\text{in}&=a[\psi^n_{j-1}+\frac{1}{2}(1-\sigma)\Delta\psi_{j-1}]\\
+F_\text{out}&=a[\psi^n_{j}+\frac{1}{2}(1-\sigma)\Delta\psi_{j]}\end{align*}
+
+
+mit der Courantzahl $\sigma=a\Delta{t}/\Delta{x}$. Für die verschiedenen Schemas werden nun verschiedene Berechnungen für $\Delta\psi$ verwendet. Für das reine Upwind Verfahren ist $\Delta\psi=0$. Einsetzen ins Inteagraionsschema ergibt
+
+$$\psi^{n=1}_j-\psi^n_j+\sigma(\psi^n_j-\psi^n_{j-1})=-\frac{a}{2}(1-\sigma)(\Delta\psi_j-\Delta\psi_{j-1})=:\Delta$$
+Wenn wir nun die Differenzen mit einer Taylorentwicklung bis zur zweiten Ordnung ersetzen und höhere Terme vernachlässigen, erhalten wir
+$$\frac{\partial\psi}{\partial{t}}\Delta{t}+\frac{1}{2}\frac{\partial^2\psi}{\partial{t}^2}\Delta{t}^2+\sigma\left(\frac{\partial\psi}{\partial{x}}\Delta{x}+\frac{1}{2}\frac{\partial^2\psi}{\partial{x}^2}\Delta{x}^2\right)=\Delta$$
+Was unter Benutzung der Wellengleichung 
+$$\frac{\partial^2\psi}{\partial{t}^2}=a^2\frac{\partial^2\psi}{\partial{x}^2}$$
+Umgeformt werden kann zu 
+$$\frac{\partial\psi}{\partial{t}}+a\frac{\partial\psi}{\partial{x}}=\frac{a}{2}(1-\sigma)\left[\Delta{x}\frac{\partial^2\psi}{\partial{x}^2}-(\Delta\psi_j-\Delta\psi_{j-1})\right]$$
+Dies entspricht einer Transportgleichung mit Diffusionskomponente als Inhomogenität, falls die rechte Seite der Gleichung positiv ist. Man sieht, dass durch geeignete Konstruktion der $\Delta\psi$ dieser Diffusionseffekt verringert werden kann. Außerdem wird dieser Term mit einer Verkleinerung der Gitterzellen abgschwächt und die Gleichung konvergiert, wenn $\Delta\psi\propto\Delta{x}$ (was im Allgemeinen der Fall ist), gegen die Transportgleichung für $\Delta{x}$ gegen 0.\newline
+Im folgenden werden die Berechnungen mit 400 Gitterzellen und einer Integrationszeit von 400s dargestellt.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{400.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des van Leer Schemas (orange: analytisch, blau: numerisch)}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{400_upwind.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des Upwind Schemas (orange: analytisch, blau: numerisch)}\end{figure}
+
+Die Rechenzeiten betragen bei meinen Implementierungen für das van Leer Schema 22.1s und für das Upwind Schema 21.4s. Es wird deutlich, dass Upwind Verfahren hier keinen bedeutenden Unterschied in der Kalkulationszeit erlaubt, sondern diese vor allem von der Anzahl an Iterationen abhängt. Dem gegenüber steht eine deutlichere Verschlechterung des Ergebnisses bei Verwendung des reinen Upwind Schemas. Eine Verhundertfachung der Integrationszeit bewirkt offenbar eine Erhöhung der Rechenzeit in der gleichen Größenordnung und die Vermehrung der Gitterzellen eher einen einstelligen Faktor.
+
+Als nächstes untersuche ich für das Upwind Verfahren die Auswirkungen einer Erhöhung des Zeitschritts über die Stabilitätsbedingung einer Courantzahl von 1 hinaus. Es wurden wieder 400 Gitterzellen verwendet.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{400_upwind.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des Upwind Schemas $c_\text{CFL}=0.8$  (orange: analytisch, blau: numerisch)}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{cfl=0.9.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des Upwind Schemas $c_\text{CFL}=0.9$  (orange: analytisch, blau: numerisch)}\end{figure}
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{cfl=1.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des Upwind Schemas $c_\text{CFL}=1$  (orange: analytisch, blau: numerisch)}\end{figure}
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{cfl=1.1.png}\caption{Integrationszeit 1s mit 400 Gitterzellen unter Verwendung des Upwind Schemas $c_\text{CFL}=1.1$  (orange: analytisch, blau: numerisch)}\end{figure}
+
+ Erkennbar ist, dass das Schema für eine Courantzahl größer als 1 komplett instabil wird und schon bei einer Integration über eine Sekunde explodiert. Dies erklärt sich durch Betrachtung des Verstärkungsfaktors.
+ 
+ $$\lambda(\theta)=1-4\sigma(1-\sigma)\sin^2(\theta/2)$$
+ 
+ Wen dieser Faktor größer als 1 ist, was bei einer Courantzahl größer als 1 der Fall ist, wird die Funktion bei vielen Iterationen zu stark vergrößert. Bei einer Courantzahl von 1 ist der Verstärkungsfaktor gleich 1, was einen Anhaltspunkt für das besonders gute Abschneiden dieses Falls bietet.
+ 
+
+\section{Aufgabe 2}
+
+Als Hauptaufgabe sollten hier die Euler Gleichungen integriert werden. Die Anfangsbedingungen sind
+$$\textbf{u}=(\rho,u,\epsilon)=\biggl\{\begin{array}{l}(1,0,2.5)\;\text{für}\;x\leq0.5\\(0.125,0,2)\;\text{für}\;x>0.5\end{array}$$
+in einem Rechenbereich von $x\in\,[0,1]$.
+Es gilt für den Druck $p=(\gamma-1)\rho\epsilon$ und die Temperatur $T=(\gamma-1)\epsilon$. Der Adiabatenexponent für das ideale Gas beträgt $\gamma=1.4$
+
+Es sollen Gitterzellen von $\Delta{x}=0.01$ und eine Zeitschrittbreite von $\Delta{t}=0.001$ verwendet werden. Um einen stabilen Algorithmus zu gewährleisten muss die Bedingung
+
+$$\Delta{t}<\Delta{t}_\text{max}=\frac{\Delta{x}}{c_s+u}$$ 
+mit der Schallgeschwindigkeit $c_s=\sqrt{\gamma{p}/\rho}$ erfüllt sein. Zur Überprüfung dessen habe ich für jeden Zeitschritt das Maximum der $\Delta{t}_\text{max}$ aller Orte aufgezeichnet. Der Verlauf ist in folgendem Diagramm dargestellt.
+\begin{figure}[H]\centering\includegraphics[scale=0.5]{tmax.png}\caption{zeitlicher Verlauf von $\underset{x_j\in\,[0,1]}{\text{max}}\{\Delta{t}_\text{max}\}$}\end{figure}
+
+Es wird also deutlich, dass ein fester Zeitschritt von $\Delta{t}=0.001$ die CFL Bedingung stets erfüllt. \newline\newline
+Nun können wir die Ergebnisse der numerischen Berechnung mit van Leer Schema mit der analytischen Lösung vergleichen. Wir betrachten das Ergebnis jeweils nach einer Zeit von $t=0.228s$. Zuerst sind die Ergebnisse für eine Stäbchenlänge von $L=10$ dargestellt.
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{dicht_ana.png}
+\caption{analytische Lösung für die Dichte}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{dichte.png}
+\caption{numerische Lösung für die Dichte}
+\end{subfigure}
+\hfill
+\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{u_ana.png}
+\caption{analytische Lösung für die Geschwindigkeitsverteilung}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{geschwindigkeit.png}
+\caption{numerische Lösung für die Geschwindigkeitsverteilung}
+\end{subfigure}
+\hfill
+\end{figure}
+
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{T_ana.png}
+\caption{analytische Lösung für die Temperatur}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{Temperatur.png}
+\caption{numerische Lösung für die Temperatur}
+\end{subfigure}
+\hfill
+\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{p_ana.png}
+\caption{analytische Lösung für den Druck}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{druck.png}
+\caption{numerische Lösung für den Druck}
+\end{subfigure}
+\hfill
+\end{figure}
+Und noch einmal das gleiche für $L=3$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+

@@ -1,0 +1,136 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+ 
+\usepackage[ngerman]{babel}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+%\usepackage{bbm}
+%\usepackage{dsfont}
+\usepackage{color}
+\usepackage{slashed}
+\usepackage{esint}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathabx}
+\usepackage{changepage}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage{cleveref}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Stocktube}
+            
+        
+        \large
+        
+            
+        \vspace{0.7cm}
+            numerische Hydrodynamik
+        \vspace{2cm}
+        
+
+        \textbf{Christian Gommeringer}
+            
+        \vspace*{7cm}
+        
+        
+            
+        
+              
+        
+            
+        
+            
+        \normalsize
+        betreut durch Dr. Christoph Schaefer\\
+        \vspace*{1cm}
+        Tübingen, den 13. November 2022
+        
+            
+    \end{center}
+\end{titlepage}
+
+
+
+\section{Einführung}
+In diesem Versuch befassen wir uns mit einem Problem der numerischen Hydrodynamik. Wir betrachten das eindimensionale Stoßrohr, und möchten hier die Lösung der  Euler Gleichung für eine unstetige Anfangsbedingung numerisch approximieren. Zum Lösen dieser partiellen Differentialgleichungen verwenden wir ein festes räumliches wie auch zeitliches Gitter, sowie die Methode des Operator Splittings. Durch die Einführung neuer kombinierter Größen lassen sich die Euler Gleichungen so umformen, dass sie die Form der einfachsten partiellen Differenzialgleichung mit Inhomogenität hat.
+
+\begin{equation*}\frac{\partial\textbf{u}}{\partial{t}}+\frac{\partial\textbf{f}(\textbf{u})}{\partial{x}}=\textbf{h}\end{equation*}
+Wobei $$\textbf{u}=(\rho,\rho{u},\rho\epsilon)$$
+$$\textbf{f}=(\rho{u},\rho{uu},\rho\epsilon{u})$$ 
+$$\textbf{h}=\left(0,-\frac{\partial{p}}{\partial{x}},-p\,\frac{\partial{u}}{\partial{x}}\right)$$
+
+Durch die oben angesprochene Methode des Operator Splitting wird nun zunächst der homogene Teil integriert. Hierbei wird unter anderem ein erweitertes Upwind-Verfahren angewandt. Ich verwende das van Leer Schema. Mit der Lösung des sogenannten ersten Advektionsschritts wird dann noch eine Korrektur durch den inhomogenen Teil der Euler Gleichungen bewirkt. Im gesamten Verfahren wird, wie angesprochen ein festes räumliches Gitter gewählt. Die Geschwindigkeit wird an den Grenzen der Gitterzellen definiert, und die Dichte und Energie werden im Zentrum der Zellen definiert. Zur geschickten Implementierung unseres Algorithmus führen wir zwei Ghost-Zellen am Anfang und am Ende unseres eindimensionalen Gitters ein. Dabei setzen wir die Werte in diesen Ghost-Zellen zur Erfüllung reflektierender Randbedingungen auf folgende Werte fest.
+
+\begin{table}[H]\begin{tabular}{l c l l c l l c l}
+$u_2$&=&0&$\rho_1$&=&$\rho_2$&$\epsilon_1$&=&$\epsilon_2$\\
+$u_1$&=&$-u_3$&$\rho_0$&=&$\rho_3$&$\epsilon_0$&=&$\epsilon_3$\\
+$u_{N+2}$&=&0&$\rho_{N+2}$&=&$\rho_{N+1}$&$\epsilon_{N+2}$&=&$\epsilon_{N+1}$\\
+$u_{N+3}$&=&$-u_{N+1}$&$\rho_{N+3}$&=&$\rho_N$&$\epsilon_{N+3}$&=&$\epsilon_N$
+\end{tabular}\end{table}
+
+\section{Aufgabe 1}
+In der ersten Aufgabe sollen wir zum Herantasten an den Algorithmus die skalare eindimensionale Transportgleichung lösen. 
+
+\begin{equation*}\frac{\partial\psi}{\partial{t}}+a\,\frac{\partial\psi}{\partial{x}}=0\end{equation*}
+für die Anfangsbedingung
+\begin{equation*}\psi(x,t=0)=\psi_0(x)\end{equation*}
+Dies wird natürlich folgendermaßen gelöst
+$$\psi(x,t)=\psi_0(x-at)$$
+
+Die obige Gleichung soll nun numerisch mit Hilfe des oben angedeuteten Verfahrens gelöst werden, für a=1 und einen Rechenbereich [-1,1] mit periodischen Randbedingungen. Als Start ist vorgegeben
+
+\begin{equation*}\psi(x,t=0)=\biggl\{\begin{array}{l}1.0\;\text{für}\;|x|\leq\frac{1}{3}\\
+0.0\;\text{für}\;\frac{1}{3}<|x|\leq{1}\end{array}\end{equation*}
+
+Diese Anfangsbedingungen sollten integriert werden. Zuerst verwende ich 40 Gitterzellen verwenden und integriere über eine Zeitspanne von 4s.
+
+\begin{figure}[H]\includegraphics[scale=0.5]{40.png}\caption{Integrationszeit 4s mit 40 Gitterzellen unter Verwendung des van Leer Schemas(orange: analytisch, blau: numerisch}\end{figure}
+
+Hier beträgt die Rechenzeit 0.1s. Dies kann nun mit dem reinen Upwind Verfahren verglichen werden, bei dem die Rechenzeit für meine Implementierung ebenfalls 0.1s beträgt.
+
+\begin{figure}[H]\includegraphics[scale=0.5]{40_upwind.png}\caption{Integrationszeit 4s mit 40 Gitterzellen unter Verwendung des Upwind Schemas(orange: analytisch, blau: numerisch}\end{figure}
+
+Es wird deutlich, dass das reine Upwind Verfahren deutlich schneller diffudiert. Das wird für eine Gitterzellenanzahl von 400 noch deutlicher. Hier wird nämlich über eine Zeitspanne von 400s integriert.
+
+\begin{figure}[H]\includegraphics[scale=0.5]{400.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des van Leer Schemas(orange: analytisch, blau: numerisch}\end{figure}
+
+\begin{figure}[H]\includegraphics[scale=0.5]{400_upwind.png}\caption{Integrationszeit 400s mit 400 Gitterzellen unter Verwendung des Upwind Schemas(orange: analytisch, blau: numerisch}\end{figure}.
+
+Die Rechenzeiten betragen bei meinen Implementierungen für das van Leer Schema 22.1s und für das Upwind Schema 21.4s. Es wird deutlich, dass Upwind Verfahren hier keinen bedeutenden Unterschied in der Kalkulationszeit erlaubt, sondern diese vor allem von der Anzahl an Iterationen abhängt. Dem gegenüber steht eine deutlichere Verschlechterung des Ergebnisses bei Verwendung des reinen Upwind Schemas. Eine Verhundertfachung der Integrationszeit bewirkt offenbar eine Erhöhung der Rechenzeit in der gleichen Größenordnung und die Vermehrung der Gitterzellen eher einen einstelligen Faktor.
+
+Als nächstes untersuche ich noch beim Upwind Verfahren die Auswirkungen einer Erhöhung des Zeitschritts über die Stabilitätsbedingung einer Courantzahl von 1 hinaus.
+
+
+
+
+Es soll nun
+
+Für 400 Gitterzellen und 400 Sekunden benötigte der Algorithmus 22.1s, für das reine Upwind Verfahren 21.4s.
+Für 40 Gitterzellen und 4s Integrationszeit, wurden beim reinen Upwind Verfahren 0.1s benötigt und beim regulären Algorithmus ebenfalls nur 0.1s.
+
+
+
+
+
+
+
+
+
+\end{document}
+
