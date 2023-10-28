@@ -1,0 +1,413 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+ 
+\usepackage[ngerman]{babel}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+%\usepackage{bbm}
+%\usepackage{dsfont}
+\usepackage{color}
+\usepackage{slashed}
+\usepackage{esint}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathabx}
+\usepackage{changepage}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{pgfplotstable}
+\usepackage{array}
+\usepackage{bookmark}
+\usepackage{booktabs}
+% \usepackage{dirtytalk}
+%\usepackage{cleveref}
+\usepackage{amssymb}
+% \newcommand{}
+\begin{document}
+\newcommand{\half}{\frac{1}{2}}
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Das klassische N-Körperproblem}
+            
+        
+        \large
+        
+            
+        \vspace{0.7cm}
+            Untersuchung von Zeitintegratoren
+        \vspace{2cm}
+        
+
+        \textbf{Christian Gommeringer}
+            
+        \vspace*{7cm}
+        
+        
+            
+        
+              
+        
+            
+        
+            
+        \normalsize
+        betreut durch Prof. Schäfer\\
+        \vspace*{1cm}
+        Tübingen, den \today
+        
+            
+    \end{center}
+\end{titlepage}
+
+\section*{Theoretische Einführung}
+In diesem Veruch befassen wir uns mit numerischen Lösungen von N-Körper Gravitationsgleichungen durch sogenannte Zeitintegratoren. Ziel ist es verschiedene Verfahren zum Lösen von eindimensionalen Differenzialgleichungen kennen zu lernen. Generell haben wir es mit DGLs 1. Ordnung zu tun.
+\begin{align*}y'(x)&=f(y,x)\\
+    y(x_0)&=y_0
+\end{align*}
+Zu deren Lösung liegt das Euler Verfahren nahe. Hier wird der Funktionsverlauf einfach in 1. Ordnung durch die Ableitung bestimmt.
+$$y(x+\Delta{x})=y'(x)\,\Delta{x}$$
+Für Gleichungen höherer Ordnung wird bei der höchsten Ordnung begonnen und bis zur gesuchten Funktion fortgefahren, was für das Beispiel 2. Ordnung bedeutet.
+\begin{align*}
+    v(t+\Delta{t})=&a(t)\,\Delta{t}\\
+    r(t+\Delta{t})=&v(t)\,\Delta{t}
+\end{align*}
+Für dieses Schema gibt es auch eine Variation namens Euler-Cromer Verfahren. Hier wird zur Berechnung des Ortes nicht die alte Geschwindigkeit sondern die neue verwendet.
+\begin{align*}
+    v(t+\Delta{t})=&a(t)\,\Delta{t}\\
+    r(t+\Delta{t})=&v(t+\Delta{t})\,\Delta{t}
+\end{align*}
+Im weiteren werde ich kurz die anderen verwendeten Integratoren Schemas aufführen.
+
+{Leap-Frog}
+Aus $r_0$ und $v_0$ wird zunächst
+$$r_{1/2}=r_0+v_0\,\Delta{t}/2$$
+berechnet. Die Aktualisierung des Ortes folgt dann aus einem Zwischenschritt
+\begin{align*}
+    v_{n+1}=&v_n+a(r_{n+1/2},(n+\half)\,\Delta{t})\,\Delta{t}\\
+    r_{n+3/2}=&r_{n+1/2}+v_{n+1}\,\Delta{t}
+\end{align*}
+zu 
+$$r_{n+1}=r_{n+1/2}+v_{n+1}\,\Delta{t}/2$$
+\newline\newline
+{Verlet}
+\begin{align*}
+    r_{n+1}=&2r_n-r_{n-1}+a_n\,\Delta{t}^2\\
+    v_{n}=&\frac{r_{n+1}-r_{n-1}}{2\,\Delta{t}}
+\end{align*}
+Der benötigte zweite Startwert des Ortes kann aus einer Taylorapproximation gewonnen werden.
+\newline\newline
+{Velocity-Verlet}
+\begin{align*}
+    r_{n+1}=&r_n+v_n\,\Delta{t}+\frac{1}{2}a_n\Delta{t}^2\\
+    v_{n+1}=&v_n+\frac{1}{2}(a_n+a_{n+1})\,\Delta{t}
+\end{align*}
+Dieser Algorithmus muss mit einem konstanen Zeitschritt betrieben werden. Für die Wahl eines Variablen Zeitschritts bietet sich die kick-drift-kick Variante an.
+\begin{align*}
+    v_{n+1/2}=&v_n+\frac{1}{2}a_n\Delta{t}\\
+    r_{n+1}=&r_n+v_{n+1/2}\Delta{t}\\
+    v_{n+1}=&v_{n+1/2}+\frac{1}{2}a_{n+1}\Delta{t}
+\end{align*}
+\newline\newline
+{Hermite Schema}
+Dieses Verfahren besteht aus einem Zwischenschritt mit vorhergesagten (p) Variablen, die im endgültigen Schritt dann korriegiert (c) werden.
+\begin{align*}
+    v_{n+1}^p=&v_n+a_n\Delta{t}+\frac{1}{2}\dot{a}_n\Delta{t}^2\\
+    r_{n+1}^p=&r_n+v_n\Delta{t}+\frac{1}{2}a_n\Delta{t}^2+\frac{1}{2}\dot{a}_n\Delta{t}^3\\
+\end{align*}
+Daraus wird dann $a_{n+1}^p$ und $\dot{a}_{n+1}^p$ berechnet. Durch Vergleich dieser Werte und einer formalen Taylorreihe von a und $\dot{a}$ lassen sich höhere Ableitungen berechnen.
+\begin{align*}
+    \half{a}_n^{(2)}=&-3\frac{a_n-a_{n+1}^p}{\Delta{t}^2}-\frac{2\dot{a}_n+\dot{a}_{n+1}^p}{\Delta{t}}\\
+    \frac{1}{6}a_n^{(3)}=&2\frac{a_n-a_{n+1}^p}{\Delta{t}^3}+\frac{\dot{a}_n+\dot{a}_{n+1}^p}{\Delta{t}^2}
+\end{align*}
+Hieraus werden dann die Korriegierten Schritte bestimmt.
+\begin{align*}
+    v_{n+1}^c=&v_{n+1}^p+\frac{1}{6}a_n^{(2)}\Delta{t}^3+\frac{1}{24}a_n^{(3)}\Delta{t}^4\\
+    r_{n+1}^c=&r_{n+1}^p+\frac{1}{24}a_n^{(2)}\Delta{t}^4+\frac{1}{120}a_n^{(3)}\Delta{t}^5
+\end{align*}
+von obigen Formeln ausgehend kann das iterierte Hermite Verfahren konstruiert werden. Hierbei aktualisieren sich Ort und Geschwindigkeit gemäß
+\begin{align*}
+    v_{n+1}^c=v_n+\half(a_{n+1}^p+a_n)\Delta{t}+\frac{1}{12}(\dot{a}_{n+1}^p-\dot{a}_n)\Delta{t}^2\\
+    r_{n+1}^c=r_n+\half(v_{n+1}^c+v_n)\Delta{t}+\frac{1}{12}(a_{n+1}^p-a_n)\Delta{t}^2
+\end{align*}
+Hierbei wird das neugewonnene $v_{n+1}^c$ in die Berechnung eingesetzt. Die Iteration besteht darin, dass diese Wert für eine erneute Berechnung der Beschleunigung und ihren Ableitung  verwendet werden, und damit dann wieder Ort und Geschwindigkeit aktualisiert werden. Zwei Iterationen reichen meist.
+Zuletz stelle ich noch 3 verschiedene Runge-Kutta Verfahren vor. Zum einen das Halbschrittverfahren.
+\begin{align*}
+    k_1=&\,\Delta{t}f(t_n,y_n)\\
+    k_2=&\,\Delta{t}f(t_n+\half\Delta{t},y_n+\half{k}_1)\\
+    y_{n+1}=&\,y_n+k_2
+\end{align*}
+Das Heun Verfahren
+\begin{align*}
+    k_1=&\,\Delta{t}f(t_n,y_n)\\
+    k_2=&\,\Delta{t}f(t_n+\Delta{t},y_n+{k}_1)\\
+    y_{n+1}=&\,y_n+\half(k_1+k_2)
+\end{align*}
+und das klassische Runge-Kutta Verfahren 4. Ordnung
+\begin{align*}
+    \tilde{v}_1=&a_n\Delta{t}\\
+    \tilde{r}_1=&v_n\Delta{t}\\
+    \tilde{v}_2=&a(t_n+\half\Delta{t},r_n+\half\tilde{r}_1)\Delta{t}\\
+    \tilde{r}_2=&(v_n+\half\tilde{v}_1)\Delta{t}\\
+    \tilde{v}_3=&a(t_n+\half\Delta{t},r_n+\half\tilde{r}_2)\Delta{t}\\
+    \tilde{r}_3=&(v_n+\half\tilde{v}_2)\Delta{t}\\
+    \tilde{v}_4=&a(t_n+\half\Delta{t},r_n+\half\tilde{r}_3)\Delta{t}\\
+    \tilde{r}_4=&(v_n+\half\tilde{v}_3)\Delta{t}\\
+    v_{n+1}=&v_n+\frac{1}{6}\tilde{v}_1+\frac{1}{3}\tilde{v}_2+\frac{1}{3}\tilde{v}_3+\frac{1}{6}\tilde{v}_4\\
+    r_{n+1}=&r_n+\frac{1}{6}\tilde{r}_1+\frac{1}{3}\tilde{r}_2+\frac{1}{3}\tilde{r}_3+\frac{1}{6}\tilde{r}_4
+\end{align*}
+\newpage
+\section*{Zwei Körper Problem}
+Zunächst teste ich die oben beschriebenen Zeitintegratoren anhand der Simulation eines Kepler problems zweiter Körper mit gleichen Massen ($0.5\,kg$). Die Anfangsbedinungen lauten.
+\begin{align*}
+    r_1(0)=&(1,0,0);\:r_2=0\\
+    v_1=&0\:v_2=(0,-1,0)
+\end{align*}
+In Unserem Fall setzen wir zur schöneren Anschauung die Gravitationskonstante G auf 0. Außerdem führe ich die weitere Untersuchung im Schwerpunktsystem der beiden Massen durch.\newline\newline
+Ich beginne mit dem Euler Schema, wobei ich über ca. 100 Perioden integriere. 
+\vspace*{-0.1cm}\begin{figure}[H]\centering\includegraphics[scale=0.5]{euler_traj.png}\caption{Planeten Trajekorie im Schwerpunktsystem über 100 Perioden}\end{figure}
+Wie zu erkennen is ist die Bahn deutlich ausgeschmiert. Es werden die Defizite dieses Schemas bei der Integration über einen großen Zeitraum aufgedeckt. Das Euler Schema ist nicht die eigentlich konstante Planetenbahn, als solche abzubilden.
+Um die Genauigkeit des Integrators besser abschätzen zu können, betrachten wir einige Erhaltungsgrößen dieses Prozesses.
+\begin{figure}[H]
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{euler_rulenz_20p.png}
+    \caption{Logarithmus der Abweichung des Runge-Lenz Vektors}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{euler_max_rulenz.png}
+    \caption{Maxima über eine Periode von $|\vec{e}|$}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgröße Runge-Lenz Vektor e für das Euler Schema}
+\end{figure}
+
+\begin{figure}[H]
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{euler_log_E.png}
+    \caption{logarithmische Abweichung der Energie}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{euler_log_a.png}
+    \caption{logarithmische Abweichung der großen Halbachse}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgrößen große Halbachse a und Energie E für das Euler Schema}\end{figure}
+    \vspace*{-2cm}\begin{figure}[H]\centering\includegraphics[scale=0.5]{euler_log_j.png}\caption{logarithmischer Verlauf des spezifischen Drehimpulses j}\end{figure}
+    Es ist zu zu erkennen, dass der Runge-Lenz Vektor sich periodisch ändert. Da dies auf einer sehr kleinen Skala stattfindet, vermute ich, dass es sich um einen periodischen Fehler des Integrators handelt, da in der Realität der Runge-Lenz Vektor konstant ist. Wenn wir uns die Maxima einer Periode anschauen, sehen wir, dass diese nicht konstant sind, was auch die langfristigen Verfall dieser Erhaltungsgröße zeigt. Dies ist auch bei der Energie und der großen Halbachse der Fall.\newline\newline
+Als nächstes untersuchen wir das Euler-Cromer Schema.
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{euler_cromer_traj.png}\caption{Planeten Trajekorie im Schwerpunktsystem über 100 Perioden}\end{figure}
+Es fällt sofort auf, dass die Bahn viel akurater bestimmt wurde. 
+\begin{figure}[H]
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{euler_cromer_rulenz_20p.png}
+    \caption{Logarithmus der Abweichung des Runge-Lenz Vektors}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{euler_cromer_max_rulenz.png}
+    \caption{Maxima über eine Periode von $|\vec{e}|$}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{euler_cromer_log_E.png}
+    \caption{logarithmische Abweichung der Energie}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{euler_cromer_log_a.png}
+    \caption{logarithmische Abweichung der großen Halbachse}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgrößen Runge-Lenz Vekor e, große Halbachse a und Energie E für das Euler-Cromer Schema}\end{figure}
+    \begin{figure}[H]\centering\includegraphics[scale=0.65]{euler_cromer_j.png}\caption{Verlauf des spezifischen Drehimpulses j}\end{figure}
+Beim Euler Cromer Schema ist zu erkennen, dass für den Runge-Lenz Vektor ein ähnlich periodisches Verhalten wie bei Euler zu beobachten ist. Allerdings oszillieren die Maxima der Perioden über einen längeren Zeitraum und fallen weniger ab. Bei der Energie und der großen Halbachse ist dies noch deutlicher zu erkennen. Hier sieht man, dass die Energie sowie die große Halbachse praktisch konstant sind, wodurch sich die Eigenschaft eines symplektischen Integrators ausdrückt. Die Abweichung beträgt nie mehr als ca. $10^{-18}$.\newpage
+
+Ich fahre mit dem Heun Schema fort.
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{heun_traj.png}\caption{Planeten Trajekorie im Schwerpunktsystem über 100 Perioden}\end{figure}
+Auch hier weißt die Bahn keine wirkliche Ausschmierung auf. 
+\begin{figure}[H]
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{heun_rulenz_20p.png}
+    \caption{Logarithmus der Abweichung des Runge-Lenz Vektors}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{heun_max_rulenz.png}
+    \caption{Maxima über eine Periode von $|\vec{e}|$}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgröße Runge-Lenz Vekor e für das Heun Schema}\end{figure}
+
+    \begin{figure}
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{heun_log_E.png}
+    \caption{logarithmische Abweichung der Energie}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{heun_log_a.png}
+    \caption{logarithmische Abweichung der großen Halbachse}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{heun_log_j.png}
+    \caption{logarithmischer Verlauf des spezifischen Drehimpulses}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgrößen spezifischer Drehimpuls j, große Halbachse a und Energie E für das Heun Schema}\end{figure}
+Während der Runge-Lenz Vektor zeitlich im Mittel konstant bleibt, nehmen Energie und große Halbachse zu.\newline\newline
+
+Beim Runge-Kutta Verfahren 4. Ordnung ist die Bahn wieder sehr gut gezeichnet.
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{rk4_traj.png}\caption{Planeten Trajekorie im Schwerpunktsystem über 100 Perioden}\end{figure} 
+\begin{figure}[H]
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{rk4_rulenz_20p.png}
+    \caption{Logarithmus der Abweichung des Runge-Lenz Vektors}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{rk4_max_rulenz.png}
+    \caption{Maxima über eine Periode von $|\vec{e}|$}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{rk4_log_E.png}
+    \caption{logarithmische Abweichung der Energie}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{rk4_log_a.png}
+    \caption{logarithmische Abweichung der großen Halbachse}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgrößen Runge-Lenz Vekor e, große Halbachse a und Energie E für das Runge-Kutta Verfahren 4. Ordnung}\end{figure}
+Über die 100 integrierten Perioden bleiben Energie und Halbachse, sowie Runge-Lenz Vektor praktisch konstant.
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{rk4_j.png}\caption{Verlauf des spezifischen Drehimpulses j}\end{figure}
+
+
+Das Hermite Schema
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{hermite_traj.png}\caption{Planeten Trajekorie im Schwerpunktsystem über 100 Perioden}\end{figure} 
+\begin{figure}[H]
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{hermite_rulenz_20p.png}
+    \caption{Logarithmus der Abweichung des Runge-Lenz Vektors}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{hermite_log_j.png}
+    \caption{Logarithmische Abweichung des spezifischen Drehimpuls}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{hermite_log_E.png}
+    \caption{logarithmische Abweichung der Energie}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{hermite_log_a.png}
+    \caption{logarithmische Abweichung der großen Halbachse}
+    \end{subfigure}
+    \hfill
+    \caption{zeitlicher Verlauf der Erhaltungsgrößen Runge-Lenz Vekor e, große Halbachse a und Energie E für das Hermite Schema}\end{figure}
+    \begin{figure}[H]\centering\includegraphics[scale=0.65]{hermite_log_j.png}\caption{logarithmischer Verlauf des spezifischen Drehimpulses j}\end{figure}
+    Auch das Hermite Schema ist genauso wie das nachfolgende iterierte Hermite Schema ein symplektischer Integrator. Die Erhaltungsgrößen sind gut zu erkennen.\newline\newline
+    Zuletz untersuche ich noch das iterierte Hermite Verfahren.
+
+    \begin{figure}[H]\centering\includegraphics[scale=0.6]{iterated_hermite_traj.png}\caption{Planeten Trajekorie im Schwerpunktsystem über 100 Perioden}\end{figure} 
+    \begin{figure}[H]
+        \hspace*{-1.5cm}
+        \begin{subfigure}{0.4\textwidth}
+        \includegraphics[scale=0.55]{Abgabe/iterated_hermite_rulenz_20p.png}
+        \caption{Abweichung des Runge-Lenz Vektors}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.4\textwidth}
+        \hspace*{-0.8cm}
+        \includegraphics[scale=0.55]{Abgabe/iterated_hermite_log_j.png}
+        \caption{logarithmische Abweichung des spezifischen Drehimpuls}
+        \end{subfigure}
+        \hfill
+        \hspace*{-1.5cm}
+        \begin{subfigure}{0.4\textwidth}
+        \includegraphics[scale=0.55]{Abgabe/iterated_hermite_log_E.png}
+        \caption{logarithmische Abweichung der Energie}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.4\textwidth}
+        \hspace*{-0.8cm}
+        \includegraphics[scale=0.55]{Abgabe/iterated_hermite_log_a.png}
+        \caption{logarithmische Abweichung der großen Halbachse}
+        \end{subfigure}
+        \hfill
+        \caption{zeitlicher Verlauf der Erhaltungsgrößen spezifischer Drehimpuls j, Runge-Lenz Vekor e, große Halbachse a und Energie E für das iterierte Hermite Verfahren}\end{figure}
+
+
+\section*{Simulation größerer Systeme}
+Im folgenden wird ein System mit 100 und eines mit 1000 Teilchen integriert. Es handel sich um das gleiche Gravitationsproblem. Die verschiedenen Integratoren werden durch den Verlauf der eigentlich konstanten Energie miteinander verglichen.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_euler_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das Euler Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_euler_E.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das Euler Schema}\end{figure}
+Während beim Euler Verfahren ein quasi kontinuierlicher Abfall der Energie zu beobachten ist, findet man beim Euler-Cromer Schema längere gerade Passagen, die von Sprüngen in der Energie unterbrochen werden. Diese Sprünge sind darauf zurück zu führen, dass sich Teilchen sehr nahe kommen, und der Algorithmus dann Fehler macht. Das ist schwer zu beheben.
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_euler_cromer_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das Euler-Cromer Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_euler_cromer_-V.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das Euler-Cromer Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_velo_verlet_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das Velocity Verlet Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_velo_E.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das Velocity Verlet Schema}\end{figure}
+Der Velocity Verlet Algorithmus schneidet hier sehr gut ab.
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_heun_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das Heun Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_heun_E.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das Heun Schema}\end{figure}
+Beim Heun Verfahren treten extrem große Sprünge auf, während das Runge-Kutta Verfahren 4. Ordnung auf der betrachteten Zeitskala sehr gut abschneidet. Die Integrierte Zeit ist sehr klein, da vor allem bei den Hermite Verfahren, schon diese kurze Zeitspanne Rechenzeiten im Bereich von Stunden benötigte.
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_rk4_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das Runge-Kutta Verfahren 4. Ordnung}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_rk4_E.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das Runge-Kutta Verfahren 4. Ordnung}\end{figure}
+Für die beiden Hermite Verfahren, konnte ich für 1000 Teilchen nur ein sehr kurzes Zeitintervall wählen, weil schon dafür die Algorithmen mehere Stunden rechneten. Daher lässt sich aus der Berechnung der Trajektorien von 1000 Teilchen wenig Information gewinnen. Es lässt sich bemerken, dass jedoch das iterierte Hermite Verfahren in Bezug auf Energieerhaltung besser abschneidet.
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_hermite_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das Hermite Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_hermite.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das Hermite Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{100b_iterated_hermite_E.png}\caption{Verlauf der Energie für 100 Teilchen ermittelt durch das iterierte Hermite Schema}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.65]{1000b_iterated_hermite_E.png}\caption{Verlauf der Energie für 1000 Teilchen ermittelt durch das iterierte Hermite Schema}\end{figure}
+Bei den beiden Hermite Integratoren ist ein ähnliches Verhalten wie beim Euler-Cromer Schema zu beobachten, gerade Passagen unterbrochen von beinahe-Diskontinuitäten. Dies hat,wie gesagt, seine Ursache in der starken Annäherung zwischen den Teilchen.
+\section*{Fazit}
+
+In diesem Versuch konnte festgestellt werden, dass bis auf den Euler Integrator alle anderen Zeitintegratoren die Trajetorien des Zweikörperproblems gut berechnen konnten, während manche Verfahren deutlich mehr Zeit in Anspruch nahmen als andere. Das Euler-Cromer Schema, sowie die beiden Hermite Schemata waren als symplektische Integratorn in der Lage, die Energie gut zu erhalten. Bei der Integration der 100 bzw. 1000 Teilchentrajekorien scheiterten in Bezug auf die Energieerhaltung allerdings alle Zeitintegratoren.
+
+\end{document}
