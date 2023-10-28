@@ -1,0 +1,272 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+ 
+\usepackage[ngerman]{babel}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+%\usepackage{bbm}
+%\usepackage{dsfont}
+\usepackage{color}
+\usepackage{slashed}
+\usepackage{esint}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathabx}
+\usepackage{changepage}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage{cleveref}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Phasengebiete in einem System harter Stäbchen}
+            
+        
+        \large
+        
+            
+        \vspace{0.7cm}
+            Monte-Carlo Simulation
+        \vspace{2cm}
+        
+
+        \textbf{Christian Gommeringer}
+            
+        \vspace*{7cm}
+        
+        
+            
+        
+              
+        
+            
+        
+            
+        \normalsize
+        betreut durch Prof. Martin Oettel\\
+        \vspace*{1cm}
+        Tübingen, den \today
+        
+            
+    \end{center}
+\end{titlepage}
+
+\section*{Einfürung}
+Wir betrachten in diesem Versuch ein großkanonisches Modell harter langer Stäbchen. Dazu erinnern wir uns zunächst der großkanonischen Zustandssumme
+$$Z_\text{GK}=\sum_{N=0}^{\infty}\frac{e^{\beta\mu{N}}}{N!}\sum_{\{\omega_N\}}e^{-\beta{H}(\omega_N)}$$
+mit der Menge aller möglichen Konfigurationen für ein gegebenes N. Der Faktor $\exp(\beta\mu)$ wird im folgenden auch oft mit $z$ abgekürzt.
+Um das Problem mit Hilfe der Monte-Carlo Simulation zu berechnen, und den numerischen Aufwand in gewissen Grenzen zu halten, nehmen wir Quantisieungen und Vereinfachungen vor. Wir lassen nur zwei mögliche Orientierungen der Stäbchen zu: ''horizontal'' und ''vertikal''. Da wir nur an der Teilchenzahl der beiden Orientierungssorten als Parameter, die unser System charackterisieren sollen, interessiert sind, müssen wir die Bewegung der Teilchen nicht in unsere Formulierung einbeziehen, da sich der Beitrag der Impulse bei der Mittelwertberechnung heraushebt.\newline
+Wie es bei der Monte-Carlo Simulation üblich ist, möchten wir über Markovketten mit einer gewissen Übergangswahrscheinlichkeit zu einer physikalischen Wahrschinlichkeitsverteilung des Systems gelangen. Hierbei wählen wir wieder eine Übergangswahrscheinlichkeit $q$, die detailed balance erfüllt. Wir wählen eine Kombination aus Vorschlagswahrscheinlichkeit $\pi$ und Akzeptanzwahrscheinlichkeit $\alpha$ auf folgende Weise.
+$$q_{i\rightarrow{j}}=\pi_{i\rightarrow{j}}\cdot\alpha_{i\rightarrow{j}}$$
+wobei
+$$\alpha_{i\rightarrow{j}}=\text{min}\Big\{1,\frac{\pi_{j\rightarrow{i}}p(\omega_j)}{\pi_{i\rightarrow{j}}p(\omega_i)}\Big\}$$
+Dass diese Übergangswahrscheinlichkeit detailed-balance erfüllt, sieht man, indem man sich Bewusst macht, dass wenn $\alpha_{i\rightarrow{j}}<1$,umgekehrt folgt, dass $\alpha_{j\rightarrow{i}}=1$. Damit ergibt sich, dass
+$$\frac{q_{i\rightarrow{j}}}{q_{j\rightarrow{i}}}=\frac{\pi_{i\rightarrow{j}}}{\pi_{j\rightarrow{i}}}\cdot\frac{\alpha_{i\rightarrow{j}}}{\alpha_{j\rightarrow{i}}}=\frac{p(\omega_j)}{p(\omega_i)},$$
+womit detailed balance gezeigt ist. Damit hat man eine große Freiheit bei der Wahl der Vorschlagswahrscheinlichkeit und kann dadurch die Übergangswahrscheinlichkeit leicht bestimmen. In unserem Modell erlauben wir nur Übergänge, bei denen ein Teilchen hinzugefügt oder weggenommen wird. Bei der Wahl der Vorschlagswahrscheinlichkeit orientieren wir uns an der Anzahl an Möglichkeiten ein Teilchen hinzu zu fügen oder weg zu nehmen. Wir legen fest, dass beim Einfügen eines Stäbchens 
+$$\pi_{i\rightarrow{j}}=\frac{1}{2}(\text{insertion/deletion})\cdot\frac{1}{M^2}(\text{Gitterplätze})\cdot\frac{1}{2}(\text{waagrecht/senkrecht})$$
+gelten soll. Und für das Löschen eines Teilchens verwenden wir eine Vorschlagswahrscheinlichkeit von 1. Das begründen wir damit, dass es N (Anzahl Teilchen) mögliche Zustände gibt, die gelöscht werden können. Da es sich hierbei allerdings um ununterscheidbare Teilchen handelt, lassen wir den Faktor $1/N$ sich herausheben.
+Damit erhalten wir dann für Akzeptanzwahrscheinlichkeiten
+\begin{itemize}
+    \item Einfügen $N\rightarrow{N+1}$: $\alpha^\text{ins}_{i\rightarrow{j}}= \text{min}\Big\{1,\frac{2M^2}{{N+1}}e^{\beta\mu}e^{-\beta\Delta{U}}\Big\}$
+    \item Löschen $N+1\rightarrow{N}$: $\alpha^\text{del}_{j\rightarrow{i}}= \text{min}\Big\{1,\frac{{N+1}}{2M^2}e^{-\beta\mu}e^{\beta\Delta{U}}\Big\}$
+\end{itemize}
+wobei $\Delta{U}\in\{0,\infty\}$ der Unterschied im Potential darstellt, das bewirkt, dass keine zwei Stäbchen sich am selben Ort befinden dürfen.
+
+
+
+
+\section*{Umsetzung und Auswertung}
+Wenn wir dieses Modell in unseren Algorithmus umsetzen, müssen wir bevor wir die Messungen starten können, herausfinden, in welcher Zeit unsere Markovketten in einer ausreichenden Übereinstimmung zu der großkanonischen Verteilung konvergieren. Wir müssen also die sogenannte Thermalisierungszeit bestimmen. Dafür zeichnen wir die Veränderungen unseres System nach jedem Monte-Carlo Update bezüglich unserer Übergangswahrscheinlichkeit auf, und plotten die Prameter des Systems als Funktion des i. Aktualisierungsschritts.
+\begin{figure}[H]\hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{therm1.png}
+    \caption{$z=0.56$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{therm2.png}
+    \caption{$z=0.84$}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{therm3.png}
+    \caption{$z=1.1$}
+    \end{subfigure}
+    \hfill
+    \caption{Thermalisierungsverhalten: tot (Gesamtzahl aller Stäbchen); h (horizontale Stäbchen); v (vertikale Stäbchen) }
+    \end{figure}
+
+In dieser Darstellung ist zu erkennen, dass eine Thermalisierung für jedes der drei z-Werte ungefähr bei $20\,000$ bis $40\,000$ eintritt. Wenn wir uns die Entwicklung des Systems auf einer größeren Monte-Carlo Zeitscala anschauen, sehen wir das Ausmaß an Schwankungen, denen das System unterliegt.
+\begin{figure}[H]\hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{long_therm1.png}
+    \caption{$z=0.56$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{long_therm2.png}
+    \caption{$z=0.84$}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{long_therm3.png}
+    \caption{$z=1.1$}
+    \end{subfigure}
+    \hfill
+    \caption{Verhalten auf längerer Monte-Carlo Zeitscala: tot (Gesamtzahl aller Stäbchen); h (horizontale Stäbchen); v (vertikale Stäbchen) }
+    \end{figure}
+Im Anschluss startete ich einen Messdurchlauf und nahm Messungen im Abstand von $40\,000$ Schritten vor. Auf diese Weise ermittelte ich für jeden Aktivitätswert $550\,250$ Messpunkte. 
+\begin{figure}[H]\hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{v_56.png}
+    \caption{Anzahl vertikale Ausrichung\newline
+    }
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{h_56.png}
+    \caption{Anzahl horizontale Ausrichtung}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{tot_56.png}
+    \caption{Gesamtzahl der Stäbchen}
+    \end{subfigure}
+    \hfill
+    \caption{Histogramme für das Auftretten verschiedener Werte der Anzahl der Stäbchenausrichtungen und der Geamtzahl der Stäbchen für eine Aktivität von $z=0.56$}
+    \end{figure}
+
+
+\begin{figure}[H]\hspace*{-1.5cm}
+        \begin{subfigure}{0.4\textwidth}
+        \includegraphics[scale=0.55]{v_84.png}
+        \caption{Anzahl vertikale Ausrichung\newline
+        }
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.4\textwidth}
+        \hspace*{-0.8cm}
+        \includegraphics[scale=0.55]{h_84.png}
+        \caption{Anzahl horizontale Ausrichtung}
+        \end{subfigure}
+        \hfill
+        \hspace*{-1.5cm}
+        \begin{subfigure}{0.4\textwidth}
+        \includegraphics[scale=0.55]{tot_84.png}
+        \caption{Gesamtzahl der Stäbchen}
+        \end{subfigure}
+        \hfill
+        \caption{Histogramme für das Auftretten verschiedener Werte der Anzahl der Stäbchenausrichtungen und der Geamtzahl der Stäbchen für eine Aktivität von $z=0.84$}
+\end{figure} 
+
+\begin{figure}[H]\hspace*{-1.5cm}
+            \begin{subfigure}{0.4\textwidth}
+            \includegraphics[scale=0.55]{v1_1.png}
+            \caption{Anzahl vertikale Ausrichung\newline
+            }
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}{0.4\textwidth}
+            \hspace*{-0.8cm}
+            \includegraphics[scale=0.55]{h1_1.png}
+            \caption{Anzahl horizontale Ausrichtung}
+            \end{subfigure}
+            \hfill
+            \hspace*{-1.5cm}
+            \begin{subfigure}{0.4\textwidth}
+            \includegraphics[scale=0.55]{tot1_1.png}
+            \caption{Gesamtzahl der Stäbchen}
+            \end{subfigure}
+            \hfill
+            \caption{Histogramme für das Auftretten verschiedener Werte der Anzahl der Stäbchenausrichtungen und der Geamtzahl der Stäbchen für eine Aktivität von $z=1.1$}
+\end{figure}
+
+
+Hier gibt es mehrere Dinge zu besprechen. Zum einen sieht man, dass die mittlere Gesamtzahl der Stäbchen mit zunehmendem z erhöht, sich die Breite dieser Histogramme allerdings kaum zwischen den verschiedenen z unterscheidet. Die Histogramme für die Ausrichtungen der Stäbchen unterscheiden sich allerdings sehr deutlich. Wo bei einer Aktivität von 0.56 nur ein einzelnes breites Maximun für beide Ausrichtungen zu sehen ist, sind für die anderen beiden z-Werte zwei Maxima zu erkennen, die mit zunehmender Aktivität ausgeprägter werden und näher an die Grenzen des möglichen Wertebereichs rücken.\newline
+Dies wird als Phasenübergang zwischen einer geordneten und einer wenig geordneten Phase interpretiert. Es wird mit hohem z umso wahrscheinlicher, dass das System in einem Zustand mit hauptsächlich parallel ausgerichteten Stäbchen (horizontal oder vertikal) befindet. Beide Zustände, sowohl hauptsächlich horizontale wie auch hauptsächlich vertikale Ausrichtung der Stäbchen, müssen aufgrund ihrer symetischen Äquivalenz gleich wahrscheinlich sein. Dies ist in meinem Fall noch nicht ganz eingetreten, was aber mit einer zu geringen Zahl an Messpunkten zu erklären ist. Der Mittelwert sowohl der Anzahl der horizontalen wie auch der Anzahl der vertikalen Stäbchen muss $N/2$ (N = Gesamtzahl der Stäbchen) betragen, was in meinem Fall aufgrund der Unsymetrie nicht der Fall ist. Da der Fehler des Mittelwerts allerding durch $\sigma/\sqrt{N}$ berechnet wird, und die Standardabweichung gegen einen bestimmten Wert konvergiert, wird eben dieser Fehler des Mittelwerts immer kleiner für größere Anzahlen an Messungen, und dadurch ist auch zu erwarten, dass die Histogrammverteilung für die Ausrichtungen der Stäbchen immer symetrischer wird.\newline\newline
+Zur Beschreibung dieses Phasenübergangs wird auch noch gern eine andere Größe der Ornungsparameter $S$ betrachtet
+$$S\vcentcolon=\frac{N_v-N_h}{N_v+N_h}$$
+Offensichtlicherweise geht der Ordnungsparameter für die ungeordnete Phase gegen 0 und geht für große Aktivitäten gegen 1(hauptsächlich vertikale Ausrichtung) oder -1(hauptsächlich horizontale Ausrichtung). In den Histogrammen des Ordnungsparameter sind noch einmal schön die unterschiedlichen Phasen zu sehen.
+\begin{figure}[H]\hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{hist_56.png}
+    \caption{$z=0.56$
+    }
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{hist_84.png}
+    \caption{$z=0.84$}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{hist_1_1.png}
+    \caption{$z=1.1$}
+    \end{subfigure}
+    \hfill
+    \caption{Histogramme für den Ordnungsparameter für die einzelnen z}
+\end{figure}
+Um den Phasenübergang nochmals genauer zu untersuchen nehme ich noch zusätzliche Messpunkte für $z=0.05,\,0.125,\,0.25,\,1.15,\,1.5$ auf, und trage Mittelert des Absolutbetrags des Ordnungsparameters gegen den Mittelwert der Packungsdichte $\eta=NL/M^2$ auf.
+\begin{figure}[H]\centering\includegraphics[scale=0.8]{Phasendiagramm.png}\caption{Phasendiagramm für das System harter Stäbchen mit zwei Orientierungen}\end{figure}
+
+\begin{table}[H]\centering\begin{tabular}{c|c|c|c|c|c|c}
+   $z$ &$\langle{|S|}\rangle$&$\sigma_S$&$\sigma_{S,\text{SEM}}$&$\langle{\eta}\rangle$&$\sigma_\eta$&$\sigma_{\eta,\text{SEM}}$\\\hline\hline
+  0.005&  0.1232839&9.22629e-02&8.79e-05&121.24767&
+ 7.52274&7.17e-03\\
+ 0.125&0.1469433&0.1091579&1.041e-04&178.79986&
+ 8.43091&8.04e-03\\
+ 0.25&0.1879092&0.1380993&1.316e-04&229.56064&
+ 10.37143&9.89e-03\\
+ 0.56&0.3757816&0.2352804&2.243e-04&286.93770&
+ 8.27710&7.89e-03\\
+ 0.84&0.6476351&0.2574562&2.454e-04&314.72185&
+ 8.19544&7.81e-03\\
+ 1.1&0.82774071&0.1737022&1.656e-04&331.94117&
+ 7.68169&7.32e-03\\
+ 1.15&0.8438404&0.1664264&1.586e-04&334.52518&
+ 7.59258&7.24e-03\\
+ 1.5&0.9226431&0.091210033&8.69e-05&348.76625&
+ 7.00955&6.68e-03\\
+\end{tabular}
+\caption{Mittelwerte und Fehler für die Darstellung des Phasendiagramms}
+\end{table}
+Im Diagramm lässt sich schön ein Phasenübergang für niegrigscalige Systeme erkennen. Der Phasenübergang 2. Ordnung, den man für $M\rightarrow\infty$ erwarten würde, ist aufgrund der Begrenztheit des Gitters etwas ausgeschmiert.\newpage
+Zu guter Letzt möchte ich noch eine Darstellung des Systems mit einer Gleichgewichtsverteilung der Stäbchen zeigen.
+\begin{figure}[H]\centering\includegraphics[scale=0.8]{vis_125.png}\caption{Exemplar einer Gleichgewichtsverteilung für $z=0.125$}\end{figure}
+\begin{figure}[H]\centering\includegraphics[scale=0.8]{vis1_1.png}\caption{Exemplar einer Gleichgewichtsverteilung für $z=1.1$}\end{figure}
+Es ist zu sehen, dass für den kleineren z-Wert die Gesamtzahl der Stäbchen kleiner ist. Außerdem hat für höhere Aktivität die Größe zusammenhängender Gebiete zugenommen hat und es überwiegt deutlich eine Ausrichtung.
+
+\section*{Abschluss}
+Der Phasenübergang vom ungeordneten zum geordneten System wurde in diesem Versuch schön zu erkennen. Er wurde sowohl durch den Ordnungsparameter sichtbar, als auch durch die explizite Darstellung des Systems in einem Graphen wie auch durch die Beobachtung des Thermalisierungsverhaltens.
+Auch das Phasendiagramm sieht unter Berücksichtigung der endlichen Größe des Gitters passend aus.
+
+
+
+
+
+
+
+
+\end{document}

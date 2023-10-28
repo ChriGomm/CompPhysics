@@ -1,0 +1,3 @@
+in "measurement.txt" sind die Messungen zu z = 0.56, 0.84, 1.1 gespeichert
+in "measurement2.txt" sind die Mesuungen für z = 0.05, 0.125, 0.25 gespeichert ( 1.15 und 1.5 hat nicht funktioniert weil ich den z array in C nicht auf einen 5-dimensionalen aktualisiert hatte)
+Deshalb musste ich z = 1.15 , 1.5 nochmal messen, was in "measurement3.txt" abgelegt ist
