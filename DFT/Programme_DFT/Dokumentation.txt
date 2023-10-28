@@ -1,0 +1,2 @@
+DFT2 beinnhaltet alle Aufgaben
+DFT3 beinhaltet noch einmal alles nur mit symetrisch um den Mittelpunkt der Stäbchen definierten Funktionen

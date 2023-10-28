@@ -1,0 +1,364 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+ 
+\usepackage[ngerman]{babel}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+%\usepackage{bbm}
+%\usepackage{dsfont}
+\usepackage{color}
+\usepackage{slashed}
+\usepackage{esint}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathabx}
+\usepackage{changepage}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage{cleveref}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Eindimensionale Dichteverteilung harter Stäbchen}
+            
+        
+        \large
+        
+            
+        \vspace{0.7cm}
+            Dichtefunktional Theorie
+        \vspace{2cm}
+        
+
+        \textbf{Christian Gommeringer}
+            
+        \vspace*{7cm}
+        
+        
+            
+        
+              
+        
+            
+        
+            
+        \normalsize
+        betreut durch Prof. Martin Oettel\\
+        \vspace*{1cm}
+        Tübingen, den \today
+        
+            
+    \end{center}
+\end{titlepage}
+
+\section{Einfürung}
+
+Dieses Protokoll betrachtet die Situation harter Stäbchen in einem eindimensionalen Potenzialtopf. Mit Hilfe der Dichtefunktionaltheorie soll die sich einstellende Gleichgewichtsdichteverteilung bestimmt werden. Ich stelle zunächst die zur Lösung benutzten Aspekte der Theorie vor. Ausgangspunkt ist das Großkanonische Potenzial, bei der die Berechnung der Zustandssumme einen Hamiltonian benutzt, der potentiell von einem externen Potential abhängt. In unserem Fall berücksichtigt dieses Potential die Wirkung der harten Wände, die die Stäbchen einschließen.
+$$\exp(-\beta{V_\text{ext}})=\Biggl\{\begin{array}{ll}\textbf{0}&\text{falls das Stäbchen sich in}\\
+ &\text{einer Wand befinden sollte.}\\
+\textbf{1}&\text{sonst}\end{array}$$ 
+Man kann das großkanonische Potential so umschreiben, dass es ein Funktional wird, das von der Dichte abhängt und von der Dichte im Gleichgewicht minimiert wird.
+\begin{equation}\Omega\,[\rho(\textbf{r})]=F[\rho(\textbf{r})]+\int\text{d}^3r\rho(\textbf{r})\,(V_\text{ext}(\textbf{r})-\mu)\end{equation}
+Hier ist $F$ die freie Energie des Systems. Um die Dichteverteilung im Gleichgewicht zu erhalten muss nun $\Omega$ minimiert werden.
+\begin{gather*}0=\frac{\delta\Omega}{\delta\rho}[\rho_0]=\frac{\delta{F}}{\delta\rho}[\rho_0]+V_\text{ext}-\mu\end{gather*}
+Dabei kann man die Freie Energie aufspalten in den Ausdruck für das ideale Gas plus einen Korrekturterm.
+$$F[\rho]=F^\text{id}[\rho]+F^\text{exc}[\rho]$$
+Wobei für den Term des idealen Gases gilt:
+$$\frac{\delta{F^\text{id}}}{\delta\rho}[\rho]=\beta^{-1}\ln(\lambda^3\rho(\textbf{r}))$$
+Mit dieser Relation kann die Minimierungsbedingung geschrieben werden als
+\begin{equation}\beta^{-1}\ln(\lambda^3\rho_0(\textbf{r}))=-\frac{\delta{F^\text{exc}}}{\delta\rho}[\rho_0]-V_\text{ext}+\mu^\text{exc}+\mu^\text{id}\end{equation}
+Wobei ich auch das chemische Potential in einen idealen und einen exzessiven Teil umgeschrieben habe.
+Wenn man nun für $\mu^\text{id}$ den Ausdruck für das ideale Gas verwendet
+$$\mu^\text{id}=\beta^{-1}\ln(\lambda^3\rho_\text{bulk}),$$
+lässt sich die Gleichung schreiben als
+\begin{equation}\rho_0(\textbf{r})=\rho_\text{bulk}\exp\left(-\beta\,\frac{\delta{F^\text{exc}}}{\delta\rho}[\rho_0]-\beta{V_\text{ext}+\beta\mu^\text{exc}}\right)\end{equation}
+Um das (konstante) exzessive chemische Potential zu bestimmen, machen wir uns zu Nutze, dass wir aus Symetriegründen annehmen können, dass für ein ausreichend großes Volumen die Dichte in der Mitte ungefähr konstant ist. Die Dichte an dieser Stelle entspricht dann der bulk-Dichte. Auf diese Weise ist die bulk-Dichte nämlich definiert. Dadurch erhält man dann eine Konsistenzgleichung, mit der man $\mu^\text{exc}$ berechnen kann.
+$$\rho_\text{bulk}=\rho_\text{bulk}\exp\left(-\beta\,\frac{\delta{F^\text{exc}}}{\delta\rho}[\rho_\text{bulk}]-\beta{V_\text{ext}+\beta\mu^\text{exc}}\right)$$
+Unter Berücksichtigung, dass das externe Potential an dieser Stelle 0 ist, findet man, dass gelten muss
+$$\mu^\text{exc}=\frac{\delta{F}^\text{exc}}{\delta\rho}[\rho_\text{bulk}]$$
+In unserem Fall betrachten wir ein Gitter und haben eine \glqq{excess}\grqq\, Freie Energie gegeben von
+$$\beta\,F^\text{exc}[\rho]=\sum_{s}(\phi^{0D}(n^{(1)}_s)-\phi^{0D}(n^{(0)}_s))$$
+wobei der Index $s$ die Stützstellen indiziert.
+\begin{align*}\phi^{0D}(n)=&n+(1-n)\ln(1-n)\\
+n^{(1)}_s=&\sum_{s'=s-L+1}^s\rho_{s'}\\
+n^{(0)}_s=&\sum_{s'=s-L+1}^{s-1}\rho_{s'}\end{align*}
+Die $n^{0,1}$ sind die sogenannten gewichteten Dichten. Wie zu sehen ist, sind wir nun von einer kontinuierlichen in eine diskrete Formulierung übergegangen, wie es auch zur algorithmischen Implementierung erforderlich ist. Eine funktionale Minimierung durch $\delta{F}/\delta\rho$ wird dadurch zu einer Minimierung über die einzelnen Gitterwerte $\partial{F}/\partial\rho_s$, da diese ja unabhängig von einander sind.
+\begin{align*}\beta\frac{\delta{F^\text{ext}}}{\delta\rho}\rightarrow\beta\frac{\partial{F^\text{exc}}}{\partial\rho_s}
+=&\sum_{s'}(\frac{\partial\phi^{0D}}{\partial{n}}(n^{(1)}_{s'})\,\frac{\partial{n^{(1)}_{s'}}}{\partial\rho_s}-\frac{\partial\phi^{0D}}{\partial{n}}(n^{(0)}_{s'})\,\frac{\partial{n^{(0)}_{s'}}}{\partial\rho_s})\\
+\text{mit}\quad\frac{\partial{n^{(1)}_{s'}}}{\partial\rho_s}=&\sum_{\tilde{s}=s}^{s+L-1}\delta_{s',\tilde{s}}\\
+\text{und}\quad\frac{\partial{n^{(0)}_{s'}}}{\partial\rho_s}=&\sum_{\tilde{s}=s+1}^{s+L-1}\delta_{s',\tilde{s}}\end{align*}
+Damit ergibt sich
+$$\beta\frac{\partial{F^\text{exc}}}{\partial\rho_s}=\sum_{s'=s}^{s+L-1}\phi^{0D\,'}(n^{(1)}_{s'})-\sum_{s'=s+1}^{s+L-1}\phi^{0D\,'}(n^{(0)}_{s'})$$
+mit
+$$\phi^{0D\,'}(n)=\frac{\partial\phi^{0D}}{\partial{n}}=-\ln(1-n)$$
+Gleichung (2), die für die Berechnung verwendet werden wird, lässt sich damit folgendermaßen in eine diskrete Formulierung umschreiben.
+\begin{equation}\rho_s=\rho_\text{bulk}\exp\left(-\beta\frac{\partial{F^\text{exc}}}{\partial\rho_s}-\beta{V}_{\text{ext},s}+\beta\mu^\text{exc}\right)\end{equation}
+Es lässt sich nun auch ein Maß für die Oberflächenspannung berechnen. Dazu betrachten wir den Unterschied im großkanonischen Potenzial zwischen der als \glqq{Anfansbedingung}\grqq\: verwendeten Bulkdichte $\rho_\text{bulk}$ und der sich durch die Wirkung der Wände eingestellten Dichte im Gleichgewicht $\rho_0$.
+$$2\gamma\coloneqq\Omega\,[\rho_0]-\Omega\,[\rho_\text{bulk}]$$
+Die großkanonischen Potentiale erhalten wir durch Diskretisierung von Gleichung (1).
+\begin{equation}\Omega\{\rho_s\}=F\{\rho_s\}+\sum_s\rho_s\,(V_{\text{ext},s}-\mu)\end{equation}
+wobei wir setzen
+\begin{align*}\rho_s\cdot{V_{\text{ext},s}}&=0\\
+\rho_s\cdot\ln\rho_s&=0\end{align*}
+für $s\in\{1,...,L\}\cup\{M-L+1,...,M\}$ 
+Der Beitrag des idealen Gases ist hierbei
+$$\beta{F}^{\text{id}}\{\rho_s\}=\sum_s\rho_s(\ln(\rho)_s-1)$$
+
+Die Oberflächenspannung kann auch aus einer theoretischen Überlegung heraus durch den sogenannten wisdom's insertion trick berechnet werden. Die Idee dieses Verfahrens besteht darin, dass man ein Teilchen an einer festen Stelle einfügt, und dadurch den Effekt von zwei Wänden erzeugt. Da das chemische Potential im Allgemeinen die Energie angibt, die nötig ist einem System ein Teilchen zuzufügen, lässt sich die Oberflächenspannung $\gamma$, die ja als Energiedifferenz zwischen dem Fall mit Wand und ohne Wand definiert wurde, mit dem chemischen Potential in Verbindung setzen. Widom's trick besagt dabei, dass dadurch, dass man das Teilchen an einer beliebigen aber festen Position einfügt, dass exzessive chemische Potential verwendet werden muss. Außerdem muss noch der Beitrag des vom eingefügten Teilchen eingenommenen Volumen zu $\Omega_\text{bulk}$ abgezogen werden, da dieser im Fall mit eingenommenem Teilchen ja nicht beiträgt, da er nur die Wand implementieren soll, und deshalb dieser auch nicht zu $\Omega_\text{bulk}$ beitragen sollte. Damit ergibt sich ein analytischer Ausdruck zur Bestimmung von $\gamma$
+$$\mu^\text{exc}(\rho_\text{bulk})=2\gamma+(2L-1)p(\rho_\text{bulk})$$
+wobei der letzte Term gerade dem Volumenbeitrag des großkanonischen Potentials entspricht der vom zusätzlichen Teilchen versperrt wird, ($\Omega=-pV$).
+Im späteren Programm und in den folgenden Rechnungen werden $\beta=1=\lambda$ gesetzt.
+Ich werden nun noch einen expliziten Ausdruck für das Großkanonische Potential angeben, unter der Verwendung der zuvor definierten Ausdrücke.
+\begin{gather*}\Omega\{\rho_s\}=F^\text{id}\{\rho_s\}+F^\text{exc}\{\rho_s\}+\sum_s\rho_s\,(V_{\text{ext},s}-\mu^\text{id}_s-\mu^\text{exc}_s)\\
+F^\text{exc}\{\rho_s\}=\sum_sn_s^1-n_s^0+(1-n^1_s)\,\ln(1-n^1_s)-(1-n^0_s)\,\ln(1-n^0_s)\\
+=\sum_s\left[\rho_s+(1-n^0_s)\,\ln(\frac{1-n^1_s}{1-n^0_s})-\rho_s\,\ln(1-n^1_s)\right]\\
+=\sum_s\left[\rho_s+(1-n^0_s)\,\ln(1-\frac{\rho_s}{1-n^0_s})-\rho_s\,\ln(1-n^1_s)\right]\\
+\end{gather*}
+und
+\begin{gather*}
+\sum_s\rho_s\frac{\partial{F}^\text{exc}}{\partial\rho_s}=\sum_s\sum_{s'=s+1}^{s+L-1}\rho_s(-\ln(1-n^1_{s'})+\ln(1-n^0_{s'}))-\sum_s\rho_s\ln(1-n^1_s)\\
+=-\sum_s\sum_{s'=s+1}^{s+L-1}\rho_s\ln(1-\frac{\rho_{s'}}{1-n^0_{s'}})-\sum_s\rho_s\ln(1-n^1_s)\\
+=-\sum_{s'}\sum_{s=s'-L+1}^{s'-1}\rho_s\,\ln(1-\frac{\rho_{s'}}{1-n^0_{s'}})-\sum_s\rho_s\ln(1-n^1_s)\\
+=-\sum_{s'}n^0_{s'}\,\ln(1-\frac{\rho_{s'}}{1-n^0_{s'}})-\sum_s\rho_s\ln(1-n^1_s)\end{gather*}
+und daher
+\begin{gather*}
+F^\text{exc}\{\rho_s\}-\sum_s\rho_s\frac{\partial{F}^\text{exc}}{\partial\rho_s}=\sum_s\left[\rho_s+\ln(1-\frac{\rho_s}{1-n^0_s})\right]\end{gather*}
+Somit berechnet sich das großkanonische Potential für die konstante Dichteverteilung $\Omega_\text{bulk}$
+über 
+$$F^\text{id}\{\rho_\text{bulk}\}-\sum_s\rho_\text{bulk}\mu^\text{id}_s=-\sum_s\rho_\text{bulk}$$
+zu
+\begin{gather*}\Omega\{\rho_\text{bulk}\}=F^\text{id}\{\rho_\text{bulk}\}+F^\text{exc}\{\rho_\text{bulk}\}+\sum_s\rho_\text{bulk}\,(V_{\text{ext},s}-\mu^\text{id}_s-\mu^\text{exc}_s)\\
+=\sum_s\ln(1-\frac{\rho_s}{1-n^0_s})\end{gather*}
+Wir berechnen den Druck $p(\rho_\text{bulk})$ über den Limes eines unendlich ausgedehnten Mediums.
+$$p(\rho_\text{bulk})=\underset{V\rightarrow\infty}{lim}-\frac{\Omega_\text{bulk}}{V}=-\ln(1-\frac{\rho_\text{bulk}}{1-(L-1)\rho_\text{bulk}})$$
+
+ \section{Implementierung und Auswertung der numerischen Ergebnisse}
+Da für die Berechnung der gewichteten Dichten zurücksummiert wird, ist es für deren Berechnung geschickt bei der numerischen Implementierung links von der linken Wand noch L Gitterpunkte zu definieren, an denen die Dichte 0 ist. Zur numerischen Berechnung der Dichte führen wir eine Picard-Iteration durch. Damit berechnen wir in jedem Schritt zunächst eine Abschätzung der Dichte über
+\begin{equation*}\rho_s^\text{new}=\rho_\text{bulk}\exp\left(-\beta\frac{\partial{F^\text{exc}}}{\partial\rho_s}\{\rho_{s'}^\text{old}-\beta{V}_{\text{ext},s}+\beta\mu^\text{exc}\right),\end{equation*}
+und aktualisieren die Dichte damit über ein gewichtetes Mittel von alt und neu
+$$\rho_s^\text{aktualisiert}=(1-\alpha)\,\rho_s^\text{old}+\alpha\,\rho_s^\text{new}$$
+Man kann die Iteration beschleunigen, indem man $\alpha$ verkleinert, wenn der Abstand $\varepsilon\vcentcolon=\sum_s\left(\rho_s^\text{new}-\rho_s^\text{old}\right)^2$ sich verringert. Allerdings muss man, um ein Abdriften der Lösung zu verhindern, $\alpha$ wieder relativ stark verringern wenn sich $\varepsilon$ von einem Schritt auf den anderen wieder erhöht. Die Iteration wird beendet, wenn $\varepsilon$ unter einen festgesetzten Grenzwert fällt.\newline\newline
+
+Aufgabe war es zunächst den Dichteverlauf für angestrebte bulk-Packungsdichten von $\eta\vcentcolon=\rho_\text{bulk}\cdot{L}=0.1,\,0.2,\,\dots,\,0.9$ zu berechnen, für Stäbchenlängen von $L=3,\,10$. Für alle Iterationen wurde das angepasste Picard-Verfahren mit einem Abbruchkriterium von $\varepsilon_\text{min}=10^{-12}$ verwendet. Zuerst sind die Ergebnisse für eine Stäbchenlänge von $L=10$ dargestellt.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.7]{d_123.png}\caption{Gleichgewichtsdichten für $\rho_\text{bulk}\cdot{L}=0.1,0.2,0.3$}\end{figure}
+\begin{figure}[H]\centering\includegraphics[scale=0.7]{d_456.png}\caption{Gleichgewichtsdichten für $\eta=0.4,0.5,0.6$}\end{figure}
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{d_7.png}
+\caption{Gleichgewichtsdichte\newline
+für $\eta=0.7$; $L=10$}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{d_8.png}
+\caption{Gleichgewichtsdichte\newline
+für $\eta=0.8$; $L=10$}
+\end{subfigure}
+\hfill
+\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{d_9.png}
+\caption{Gleichgewichtsdichte\newline
+für $\eta=0.9$; $L=10$}
+\end{subfigure}
+\hfill
+\end{figure}\newpage
+Und noch einmal das gleiche für $L=3$.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.7]{d3_123.png}\caption{Gleichgewichtsdichten für $\rho_\text{bulk}\cdot{L}=0.1,0.2,0.3$; $L=3$}\end{figure}
+\begin{figure}[H]\centering\includegraphics[scale=0.7]{d3_456.png}\caption{Gleichgewichtsdichten für $\eta=0.4,0.5,0.6$; $L=3$}\end{figure}
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{d3_7.png}
+\caption{Gleichgewichtsdichte\newline
+für $\eta=0.7$; $L=3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{d3_8.png}
+\caption{Gleichgewichtsdichte\newline
+für $\eta=0.8$; $L=3$}
+\end{subfigure}
+\hfill
+\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{d3_9.png}
+\caption{Gleichgewichtsdichte\newline
+für $\eta=0.9$; $L=3$}
+\end{subfigure}
+\hfill
+\end{figure}
+
+Im zweiten Schritt sollten die Oberflächenspannungen $\gamma$ aus der ermittelten Gleichgewichtsdichtevertreilung berechnet, und mit der theoretischen Vorhersage verglichen werden.
+
+\begin{table}[H]\centering\begin{tabular}{l | c | c | c}
+$\eta$&Druck&$\gamma_\text{num}$&$\gamma_\text{anal}-\gamma_\text{num}$\\\hline\hline
+0.1&0.0364&-0.00187&-6.906e-12\\
+0.2&0.0800&-0.00849&-3.612e-12\\
+0.3&0.1335&-0.02196&-2.657e-12\\
+0.4&0.2007&-0.04559&-2.177e-12\\
+0.5&0.2877&-0.08495&-1.967e-12\\
+0.6&0.4055&-0.15005&-1.8473-12\\
+0.7&0.5754&-0.26106&-1.939e-12\\
+0.8&0.8473&-0.46623&-2.350e-12\\
+0.9&1.3863&-0.92815&-3.855e-12
+\end{tabular}\caption{Druck und numerische Oberflächenspannung sowie deren Differenz zur analytisch berechneten für $L=3$.}\end{table}
+
+
+
+\begin{table}[H]\centering\begin{tabular}{l | c | c | c}
+$\eta$&Druck&$\gamma_\text{num}$&$\gamma_\text{anal}-\gamma_\text{num}$\\\hline\hline
+0.1&0.0110&-0.00257&-2.255e-11\\
+0.2&0.0247&-0.01189&-1.162e-11\\
+0.3&0.0420&-0.03148&-8.589e-12\\
+0.4&0.0645&-0.06728&-7.289e-12\\
+0.5&0.0953&-0.12998&-6.634e-12\\
+0.6&0.1398&-0.24066&-6.531e-12\\
+0.7&0.2097&-0.44662&-7.185e-12\\
+0.8&0.3365&-0.87764&-1.231e-11\\
+0.9&0.6419&-2.05797&-9.165e-06
+\end{tabular}\caption{Druck und numerische Oberflächenspannung sowie deren Differenz zur analytisch berechneten für $L=10$.}\end{table}
+Wie zu erkennen ist, stimmen die numerischen Ergebnisse sehr gut mit der analytischen Lösung überein.\newline\newline
+Als nächstes betrachten wir noch einen weiteren Parameter, die Exzess-Adsorption $\Gamma=1/2\,\sum_{\{s\,\text{in wall}\}}({\rho_0}_s-{\rho_\text{bulk}}_s)$. Wenn wir uns Gleichung (5) in Erinnerung rufen
+\begin{equation*}\Omega\{\rho_s\}=F\{\rho_s\}+\sum_s\rho_s\,(V_{\text{ext},s}-\mu)\end{equation*}
+erkennen wir
+\begin{align*}\Gamma&=-\frac{\partial}{\partial\mu}\,\frac{1}{2}\,(\Omega\{\rho_0\}-\Omega\{\rho_\text{bulk}\})\\
+&=-\frac{\partial\gamma}{\partial\mu}\end{align*}
+Diese Beziehung gibt uns zusätzlich noch mal die Möglichkeit unsere Ergebnisse zu überprüfen. Da die sich einstellende Dichte in der Mitte der Wände $\rho_\text{bulk}$ der bestimmende Parameter für die Gleichgewichtsdichteverteilung ist, lässt sich auch schreiben $\gamma=\gamma(\rho_\text{bulk})$ sowie $\mu=\mu(\rho_\text{bulk})$ und für alle andere Größen auch ( deshalb der Name Dichtefunktionaltheorie : )). Damit lässt sich numerisch eine Ableitung berechnen
+\begin{align*}\Gamma_\text{num}(\rho_\text{bulk}=\rho^*)\vcentcolon=-\frac{\gamma(\rho_\text{bulk}=\rho^*+\Delta\rho)-(\rho_\text{bulk}=\rho^*-\Delta\rho)}{\mu(\rho_\text{bulk}=\rho^*+\Delta\rho)-\mu(\rho_\text{bulk}=\rho^*-\Delta\rho)}\end{align*}
+Der Vergleich der beiden $\Gamma$ Werte ist in folgender Tabelle zu finden.
+
+\begin{table}[H]\centering\begin{tabular}{l | c | c }
+$\eta$&$\Gamma$&$\Gamma+\partial\gamma/\partial\mu$\\\hline\hline
+0.1&0.009&-1.8167e-06\\
+0.2&0.036&-9.4824e-07\\
+0.3&0.081&-8.5532e-07\\
+0.4&0.144&-1.0328e-06\\
+0.5&0.225&-1.3774e-06\\
+0.6&0.324&-1.9133e-06\\
+0.7&0.441&-2.7776e-06\\
+0.8&0.576&-4.3891e-06\\
+0.9&0.729&-9.6564e-06
+\end{tabular}\caption{Vergleich der Adsorption aus Dichteverteilung, welche mit $\Gamma$ bezeichnet ist, und Ableitung der Oberflächenspannung.}\end{table}
+
+Die Großkanonische Zustandsdichte lässt sich in unserem Formalismus schreiben als eine Summe über einzelne Summanden, die wir $\omega_s$ nennen.
+\begin{equation*}\Omega\{\rho_s\}=F\{\rho_s\}+\sum_s\rho_s\,(V_{\text{ext},s}-\mu)=\vcentcolon\sum_s\omega_s\end{equation*}
+
+Die Beträge der einzelnen Summanden sind allerdings nicht symmetrisch zum Mittelpunkt verteilt, wie die folgenden  Plots zeigen
+
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{w3_4.png}
+\caption{$\eta=0.7$; $L=3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{w3_7.png}
+\caption{$\eta=0.8$; $L=3$}
+\end{subfigure}
+\hfill
+\caption{$\omega_s$ als Funktion der Position aufgetragen jeweils vom Mittelpunkt zur rechten/linken Wand}
+\end{figure}
+
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{w_4.png}
+\caption{$\eta=0.7$; $L=10$}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{w_7.png}
+\caption{$\eta=0.8$; $L=10$}
+\end{subfigure}
+\hfill
+\caption{$\omega_s$ als Funktion der Position aufgetragen jeweils vom Mittelpunkt zur rechten/linken Wand}
+\end{figure}
+
+Dieses Verhalten kommt zum einen daher, dass Positionszuweisung eines Stäbchens unsymmetrisch sind, da der Ort des Stäbchens als Position des linken Endes definiert ist und nicht als dessen Mittelpunkt. Zum anderen ist sind die gewichten Dichten und damit die Exzess Freie Energie nicht symmetrisch da sie rückwärts summieren und nicht gleichmäßig um das Stäbchen herum. Außerdem ist die Reduktion von $n^1$ zu $n^0$ nicht symmetrisch, da beim Übergang immer nur der Dichtewert der am weitesten rechten Position weggelassen wird. Man kann diese Aspekte des Formalismus auch symmetrisch wählen. Das habe ich im folgenden für eine Stäbchenlänge aus den ungeraden Natürlichen Zahlen getan. Ich definiere die gewichteten Dichten dann auf folgende Weise
+\begin{align*}n^1_s&=\sum_{s'=s-L//2}^{s+L//2}\rho_{s'}\\
+n^0_s&=\frac{1}{2}\,\left(\sum_{s'=s-L//2+1}^{s+L//2}\rho_{s'}+\sum_{s'=s-L//2}^{s+L//2-1}\rho_{s'}\right)\end{align*}
+
+Bei einer solchen Wahl sind die Summanden des großkanonischen Potentials komplett symmetrisch.
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{ws2_4.png}
+\caption{$\omega_s$ links der Mitte gespiegelt}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{ws_4.png}
+\caption{$\omega_s$ rechts der Wand}
+\end{subfigure}
+\hfill
+\caption{$\omega_s$ als Funktion der Position aufgetragen jeweils vom Mittelpunkt zur rechten/linken Wand. $L$ ist hier 15;$ \eta=0.4$}
+\end{figure}
+
+
+\begin{figure}[H]\hspace*{-1.5cm}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.55]{ws2_7.png}
+\caption{$\omega_s$ links der Mitte gespiegelt}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.4\textwidth}
+\hspace*{-0.8cm}
+\includegraphics[scale=0.55]{ws_7.png}
+\caption{$\omega_s$ rechts der Wand}
+\end{subfigure}
+\hfill
+\caption{$\omega_s$ als Funktion der Position aufgetragen jeweils vom Mittelpunkt zur rechten/linken Wand. $L$ ist hier 15; $\eta=0.7$}
+\end{figure}
+
+\section{Abschluss}
+Ich fasse nochmal die wesentlichen Aspekte dieses Versuchs zusammen. Wir betrachteten im Eindimensionalen eine Verteilung von harten Stäbchen der Länge L und berechneten mit Hilfe einer numerischen Implementierung der Dichtefunktionaltheorie deren Gleichgewichtsdichteverteilung für verschiedene Packungsdichten. Außerdem berechneten wir daraus die Oberflächenspannung und die Adsorption und untersuchten deren theoretischische Beziehung zu einander. Auf diese Weise konnten wir die Korrektheit unseres Algorithmus überprüfen, was erfreulicherweise ein positives Ergebnis ergeben hat.
+
+
+\end{document}
+
+
+% \section{aufbewahrung}
+% Mit einer theoretischen Überlegung lässt sich die Oberflächenspannung auch analytisch abschätzen.
+% Zunächst möchte ich von Gleichung () ausgehend
+% $$\beta^{-1}\ln(\lambda^3\rho_0(\textbf{r}))=-\frac{\delta{F^\text{exc}}}{\delta\rho}[\rho_0]-V_\text{ext}+\mu,$$
+% in der wir bereits die Unterscheidung $F=F^\text{id}+F^\text{exc}$ vorgenommen hatten, auch für $\mu$ diese Unterscheidung vornehmen
+% $$\mu=\mu^\text{id}+\mu^\text{exc}=\beta^{-1}\ln(\lambda^3\rho_\text{bulk})+\mu^\text{exc}$$
+% Daraus ergibt sich dann
+% $$\rho_0(\textbf{r})=\rho_\text{bulk}\exp\left(-\beta\,\frac{\delta{F^\text{exc}}}{\delta\rho}[\rho_0]-\beta{V_\text{ext}}+\beta\mu^\text{exc}\right)$$
+% Hier erkennt man, dass für $\rho(\textbf{r})=\rho_\text{bulk}$ innerhalb der Wände gelten muss
+% $$\mu^\text{exc}=\frac{\delta{F}^\text{exc}}{\delta\rho}$$
+% Es wird außerdem deutlich, dass für konstante bulk-Dichte auch das exzessive chemische Potential konstant ist. Man erinnere sich, dass das chemische Potenzial $\mu(\textbf{r})$ der Energie entspricht, die notwendig ist ein Teilchen am Ort $\textbf{r}$ einzufügen. Dieses zusätzliche Teilchen an einer festen Position hat jedoch die Wirkung von zwei trennenden Wänden, die wieder eine Oberflächenspannung erzeugen. Das chemische Potential entspricht also der Energiedifferenz zwischen dem Fall ohne Wand und mit Wand und daher $2\gamma$. Es muss noch der Beitrag des Volumens, das das neue Teilchen einnimmt abgezogen werden, da dieser nur im Term ohne Wand vorkommt und dieses Volumen im Fall mit Wänden nur der Implementierung der Wände dient. Somit erhalten wir als analytische Abschätzung
+% $$\mu^\text{exc}(\rho_\text{bulk})=2\gamma+(2L-1)p(\rho_\text{bulk})$$
+% wobei der letzte Term gerade dem Volumenbeitrag des großkanonischen Potentials entspricht der vom zusätzlichen Teilchen versperrt wird, ($\Omega=-pV$).
+% Ich nenne es eine Abschätzung, da ich denke, dass hier gewisse nähernde Annahmen getroffen wurden. $\mu^\text{exc}$ entspricht nämlich nicht dem gesamten chemischen Potential.
+% Um die angegebenen Formeln kompatibel zu machen, setze ich $\lambda$ auf 1. Dies im Bewusstsein berechnet sich die 
+
+
+
+
+
+% \end{document}
