@@ -1,0 +1,588 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+ 
+\usepackage[ngerman]{babel}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+%\usepackage{bbm}
+%\usepackage{dsfont}
+\usepackage{color}
+\usepackage{slashed}
+\usepackage{esint}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathabx}
+\usepackage{changepage}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{pgfplotstable}
+\usepackage{array}
+\usepackage{bookmark}
+\usepackage{booktabs}
+% \usepackage{dirtytalk}
+%\usepackage{cleveref}
+
+
+\begin{document}
+\newcommand{\half}{\frac{1}{2}}
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Projekt 5}
+            
+        
+        \large
+        
+            
+        \vspace{0.7cm}
+            \hspace*{2.5cm}Fit experimenteller Daten\newline
+            Simulation der Bewegung von Elektronen in Materie
+        \vspace{2cm}
+        
+
+        \textbf{Christian Gommeringer}
+            
+        \vspace*{7cm}
+        
+        
+            
+        
+              
+        
+            
+        
+            
+        \normalsize
+        betreut durch Dr. Hehl\\
+        \vspace*{1cm}
+        Tübingen, den \today
+        
+            
+    \end{center}
+\end{titlepage}
+
+\section{Anpassung experimenteller Daten}
+Zu Beginn dieser Betrachtung werden zunächst die Konzepte von gewichtetem Mittelwert sowie innerer und externer Varianz vorgestellt. Für eine Reihe von Messwerten mit bekanntem Fehler $(x_i,\sigma_i)$ werden diese Größen wie folgt definiert.
+Der gewichtete Mittelwert ergibt sich durch
+$$\bar{x}=\frac{\sum_i\frac{x_i}{\sigma_i^2}}{\sum_i\sigma_i^2}$$
+Innere Varianz berechnet sich duch
+$$\sigma_{m,int}^2=(\sum_i\sigma_i^2)^{-1}$$
+Die externe Varianz für eine betrachtete Größe bei n Messwerten brechnet sich duch
+$$\sigma_{m,ext}^2=\frac{1}{n-1}\frac{\sum_i\frac{(x_i-\bar{x})^2}{\sigma_i^2}}{\sum_i\sigma_i^2}$$
+was sich duch Einführen von
+$$\chi ^2=\sum_i\frac{(x_i-\bar{x})^2}{\sigma_i^2}$$
+auch schreiben lässt als
+$$\sigma_{m,ext}^2=\frac{\chi ^2}{n-1}\,\sigma_s{m,int}^2$$
+\begin{table}[H]\begin{tabular}{l r}
+    $\bar{c}=$&299792.777\\
+    $\sigma_{m,int}=$&0.911\\
+    $\sigma_{m,ext}=$&.616
+\end{tabular}\end{table}
+Messwerte können auch dazu verwendet werden, um einen funktionalen Zusammenhang zwischen zwei Größen zu bestimmen. Wir möchten nun durch gebene Messwerte Parameter einer Funktion abschätzen. Dazu wird die $\chi^2$-Funktion minimiert. 
+$$\chi^2(a,b)=\sum_i\frac{(y_i-a-bx)^2}{\sigma_i^2}$$
+Bei einer linearen Funktion führt das auf ein lineares Gleichungssystem, das nach Definition der Größen
+$$S_{\alpha,\beta}=\sum_i\frac{\alpha_i\beta_i}{\sigma_i^2}$$
+gelösst wird durch die optimalen Parameter
+\begin{align*}
+    a &= \frac{S_{x,x}S_{y,1}-S_{x,1}S_{x,y}}{D}\\
+    b &= \frac{S_{1,1}S_{x,y}-S_{x,1}S_{y,1}}{D}
+\end{align*}
+mit $D=S_{1,1}S_{x,x}-S_{x,1}^2$. Durch Gauß'sche Fehlerfortpflanzung kann noch der Fehler der beiden Parameter bestimmt werden.
+\begin{align*}
+    \sigma_a^2 &= \frac{S_{x,x}}{D}\\
+    \sigma_b^2 &= \frac{S_{1,1}}{D}
+\end{align*}
+In unserem Fall haben wir Spannungswerte und fehlerbehaftete Werte für die Stromstärke.
+
+% \pgfplotstableset{% global config, for example in the preamble
+% % these columns/<colname>/.style={<options>} things define a style
+% % which applies to <colname> only.
+
+% columns/0/.style={
+% sci,sci zerofill,sci sep align,precision=1,sci superscript,
+% column name=$I/A$,
+% },
+% columns/1/.style={
+% sci,sci zerofill,sci sep align,precision=2,sci 10e,
+% column name=$U/V$,
+% },
+% columns/2/.style={
+% string replace={0}{}, % erase '0'
+% column name={$Delta{I}/A$},
+% dec sep align,
+% },
+
+% empty cells with={--}, % replace empty cells with '--'
+% every head row/.style={before row=\hline,after row=\hline\hline},
+% every last row/.style={after row=\hline},
+% }
+% \begin{table}[H]\centering
+% \pgfplotstabletypeset[ % local config, applies only for this table
+% columns= {0,1,2},
+% columns/0/.style={column name= $\bm{U}/\bm{V}$},
+% columns/1/.style={column name= $\bm{I/A}$},
+% columns/2/.style={column name= $\bm{\Delta{I}/A}$},
+% every head row/.style={before row=\hline,after row=\hline\hline},
+% every last row/.style={after row=\hline},
+% column type/.add={|}{},% results in '|c'
+% every last column/.style={
+% column type/.add={}{|}},
+% ]{dat_1.2.csv}
+% \caption{Testdatenset}
+%     \end{table} 
+
+\begin{table}[H]\centering
+    \pgfplotstabletypeset[%
+       fixed zerofill,
+    %    precision=3,
+    %    col sep=space,
+       dec sep align,
+       columns/0/.style ={fixed,precision=1,column name=$\bm{U/V}$},
+       columns/1/.style ={fixed,precision=3,column name=$\bm{I/A}$},
+       columns/2/.style ={column name=$\bm{\Delta{I}/A}$},
+       every head row/.style={after row=\hline\hline},
+       every last row/.style={after row=\hline},
+       column type/.add={|}{},
+       every last column/.style={
+       column type/.add={}{|}}, 
+    ]{dat_1.2.csv}
+    \caption{Testdatenset Aufgabe 1.2}
+    \end{table} 
+Ich möchte zunächst einen Zusammenhang der Form $I=U/R+I_0$ fitten. Dazu können wir die obige Formel verwenden und a mit $I_0$ und b mit $1/R$ identifizieren. Den Fehler für R müssen wir aber neu berechnen, und erhalten wenn wir das tun
+$$\sigma_R^2=\frac{S\,D^2}{(S{1,1}S_{x,y}-S{x,1}S_{y,1})^4}$$
+Es ergeben sich danach folgende Werte für die Parameter
+\begin{table}[H]\centering\begin{tabular}{c|c|c|c|c|c}R&$I_0$&$\sigma_R$&$\sigma_{I_0}$&$\chi^2$&$\chi^2/(N-2)$\\\hline
+    3.630&-0.066&0.045&0.008&17.883&1.788
+\end{tabular}\caption{Fitparamter für die Funktion $I=U/R+I_0$ für die $N=12$ Messwerte}\end{table}
+
+Für den Fall, dass wir $a=0$ wählen, berechnet sich der Wiederstand als
+$$R=\frac{S_{x,x}}{S_{x,y}}$$
+und damit
+$$\sigma_R^2=\frac{S_{x,x}^3}{S_{x,y}^4}$$
+\begin{table}[H]\centering\begin{tabular}{c|c|c|c}R&$\sigma_R$&$\chi^2$&$\chi^2/(N-2)$\\\hline
+    3.934&0.033&81.960&8.196
+\end{tabular}\caption{Fitparamter für die Funktion $I=U/R$ für die $N=12$ Messwerte}\end{table}
+Aus dem Ergebnis für das normierte $\chi^2$ kann man schließen, dass beide Anpassungen nicht gut genug sind, da vermutlich zu wenige Messwerte vorliegen. Die affin-lineare Anpassungsfunktion schneidet hier jedoch besser ab.\newline\newline{
+}\newpage
+Als nächstes erweitern wir das Regressionsmodel ein wenig, indem wir Linearkombinationen von Funktionen fitten und die Linearkoeffizienten bestimmen. Dazu betrachten wir eine Winkelverteilung einer Größe.
+\begin{table}[H]\centering
+    \pgfplotstabletypeset[%
+        fixed zerofill,
+    %    precision=3,
+    %    col sep=space,
+       dec sep align,
+       columns/0/.style ={fixed,precision=1,column name=$\bm{\cos\theta}$},
+       columns/1/.style ={int detect,column name=$\bm{N}$},
+       columns/2/.style ={column name=$\bm{\sigma_N}$},
+       every head row/.style={after row=\hline\hline},
+       every last row/.style={after row=\hline},
+       column type/.add={|}{},
+       every last column/.style={
+       column type/.add={}{|}}, 
+    ]{dattable_1.3.csv}
+    \caption{Testdatenset Aufgabe 1.3}
+    \end{table} 
+Zunächst fitte ich ein Polynom n. Grades in $\cos\theta$, wobei ich $n\in\{0,\dots,9\}$, da 10 Parameter bei 10 Messpunkten zu fitten definitiv ein overfit darstellt. Ich nehme die Anpassung wie zuvor vor, indem ich das zugehörige lineare Gleichungssystem löse. Es ergbit sich
+
+\begin{table}[H]\hspace*{-1.6cm}
+    \pgfplotstabletypeset[%
+        fixed zerofill,
+    %    precision=3,
+    %    col sep=space,
+       dec sep align,
+       empty cells with={--},
+       columns/0/.style ={int detect,column name=$\bm{n}$},
+       columns/1/.style ={fixed,precision=1,column name=$\bm{a_0}$},
+       columns/2/.style ={fixed,precision=1,column name=$\bm{a_1}$},
+       columns/3/.style ={fixed,precision=1,column name=$\bm{a_2}$},
+       columns/4/.style ={fixed,precision=1,column name=$\bm{a_3}$},
+       columns/5/.style ={fixed,precision=1,column name=$\bm{a_4}$},
+       columns/6/.style ={fixed,precision=1,column name=$\bm{a_5}$},
+       columns/7/.style ={fixed,precision=1,column name=$\bm{a_6}$},
+       columns/8/.style ={fixed,precision=1,column name=$\bm{a_7}$},
+       columns/9/.style ={fixed,precision=1,column name=$\bm{a_8}$},
+       columns/10/.style ={fixed,precision=1,column name=$\bm{a_9}$},
+       every head row/.style={after row=\hline\hline},
+       every last row/.style={after row=\hline},
+       column type/.add={|}{},
+       every last column/.style={
+       column type/.add={}{|}}, 
+    ]{result_cosfit.csv}
+    \caption{Fittparamter für die Polynome in $\cos\theta$}
+    \end{table} 
+
+    \begin{figure}[H]\vspace*{-3.3cm}\hspace*{-1.5cm}
+        \begin{subfigure}{0.4\textwidth}
+        \includegraphics[scale=0.55]{cosfit_0.png}
+        \caption{Grad 0}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.4\textwidth}
+        \hspace*{-0.8cm}
+        \includegraphics[scale=0.55]{cosfit_1.png}
+        \caption{Grad 1}
+        \end{subfigure}
+        \hfill
+        \hspace*{-1.5cm}
+        \begin{subfigure}{0.4\textwidth}
+        \includegraphics[scale=0.55]{cosfit_2.png}
+        \caption{Grad 2}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.4\textwidth}
+            \hspace*{-0.8cm}
+            \includegraphics[scale=0.55]{cosfit_3.png}
+            \caption{Grad 3}
+            \end{subfigure}
+            \hfill
+            \hspace*{-1.5cm}
+            \begin{subfigure}{0.4\textwidth}
+            \includegraphics[scale=0.55]{cosfit_4.png}
+            \caption{Grad 4}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}{0.4\textwidth}
+                \hspace*{-0.8cm}
+                \includegraphics[scale=0.55]{cosfit_5.png}
+                \caption{Grad 5}
+                \end{subfigure}
+                \hfill
+        \caption{Darstellung der Regression duch n. Grad eines Polynoms $\sum_{i=0}^na_i\,\cos^i\theta$}
+\end{figure}
+
+\begin{figure}[H]\hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{cosfit_6.png}
+    \caption{Grad 6}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{cosfit_7.png}
+    \caption{Grad 7}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{cosfit_8.png}
+    \caption{Grad 8}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+        \hspace*{-0.8cm}
+        \includegraphics[scale=0.55]{cosfit_9.png}
+        \caption{Grad 9}
+        \end{subfigure}
+        \hfill
+    \caption{Darstellung der Regression duch n. Grad eines Polynoms $\sum_{i=0}^na_i\,\cos^i\theta$}
+\end{figure}
+
+\begin{table}[H]\centering
+    \pgfplotstabletypeset[%
+        % fixed zerofill,
+    %    precision=3,
+    %    col sep=space,
+    %    dec sep align,
+       columns/0/.style ={int detect,column name=$\bm{n}$},
+       columns/1/.style ={sci,precision=2,column name=$\bm{\chi^2}$},
+       columns/2/.style ={column type=c|,string type,column name=$\bm{\chi^2/(10-(n+1))}$},
+       every head row/.style={before row=\hline,after row=\hline\hline},
+       every last row/.style={after row=\hline},
+       column type/.add={}{|},
+       every first column/.style={
+       column type/.add={|}{}}, 
+    ]{chi_cosfit.csv}
+    \caption{$\chi^2$ sowie reduziertes $\chi^2$ für die Polynome in $\cos\theta$}
+    \end{table} 
+Eine äquivalente Untersuchung lässt sich anstellen, indem ich eine Linearkombinationen von Legendre Polynomen in $\cos\theta$ an die Daten fitte. Da die Legendre Polynome n. Grads sind Polynome n. Grads, und da die zu lösenden Gleichungssysteme eindeutige Lösungen besitzen, was im Rahmen des Algorithmus zu deren Lösung ermittelt wurde, handelt sich bei den angepassten Legendre Polynomen um dieselben Funktionen wie zuvor.
+Die Linear Koeffizienten berechnete ich als
+\begin{table}[H]\hspace*{-0.5cm}
+    \pgfplotstabletypeset[%
+        fixed zerofill,
+    %    precision=3,
+    %    col sep=space,
+       dec sep align,
+       empty cells with={--},
+       columns/0/.style ={int detect,column name=$\bm{n}$},
+       columns/1/.style ={fixed,precision=1,column name=$\bm{a_0}$},
+       columns/2/.style ={fixed,precision=1,column name=$\bm{a_1}$},
+       columns/3/.style ={fixed,precision=1,column name=$\bm{a_2}$},
+       columns/4/.style ={fixed,precision=1,column name=$\bm{a_3}$},
+       columns/5/.style ={fixed,precision=1,column name=$\bm{a_4}$},
+       columns/6/.style ={fixed,precision=1,column name=$\bm{a_5}$},
+       columns/7/.style ={fixed,precision=1,column name=$\bm{a_6}$},
+       columns/8/.style ={fixed,precision=1,column name=$\bm{a_7}$},
+       columns/9/.style ={fixed,precision=1,column name=$\bm{a_8}$},
+       columns/10/.style ={fixed,precision=1,column name=$\bm{a_9}$},
+       every head row/.style={after row=\hline\hline},
+       every last row/.style={after row=\hline},
+       column type/.add={|}{},
+       every last column/.style={
+       column type/.add={}{|}}, 
+    ]{result_lpfit.csv}
+    \caption{Fittparamter für angepasste Funktion $\sum_{i=0}^na_i\,P_i(\cos\theta)$}
+    \end{table} 
+
+\begin{table}[H]\centering
+    \pgfplotstabletypeset[
+       columns/0/.style ={column type=|c|,string type,column name=$\bm{n}$},
+       columns/1/.style ={column type=c|,string type,column name=$\bm{\chi^2}$},
+       columns/2/.style ={column type=c|,string type,column name=$\bm{\chi^2/(10-(n+1))}$},
+       every head row/.style={before row=\hline,after row=\hline\hline},
+       every last row/.style={after row=\hline},
+       column type/.add={}{|},
+       every first column/.style={
+       column type/.add={|}{}}, 
+    ]{chi_lpfit.csv}
+    \caption{$\chi^2$ sowie reduziertes $\chi^2$ für die Polynome in $\cos\theta$}
+    \end{table} 
+Anhand des reduzierten $\chi^2$ lässt sich auch noch einmal die Äquivalenz der beiden Basen erkennen.
+\newline\newline
+Als letzte Aufgabe dieses Abschnitts sollte ein Zerfallsprozess von Silber untersucht werdenf. Es soll angnommen werden, dass sich der zeitliche Verlauf an zerfallenden Teilchen der Sorte 1 und 2, wie folgt beschreiben lässt.
+$$N(t)=N_1\,\exp(-\lambda_1\,t)+N_2\,\exp(-\lambda_2\,t)$$
+Daraus ergibt sich die Anzahl an Zerfällen in einem Zeitintervall $(t,t+\Delta{t})$ als
+\begin{align*}A(t)&=N(t)-N(t+\Delta{t})+A_\text{nat}\\
+    &=N_1\,\exp(-\lambda_1\,t)\,\left(1-\exp(-\lambda_1\,\Delta{t})\right)+N_2\,\exp(-\lambda_2\,t)\,\left(1-\exp(-\lambda_2\,\Delta{t})\right)+A_\text{nat}
+\end{align*}
+Diese Funktion passte ich mit verschiedenen Verfahren an die gegebene Datenreihe an. Ich versuchte ein Downhill simplex Algorithmus nach Nelder und Mean. Diesen Algorithmus wandte ich zum einen nach einer Implementierun in den Numerical Recipes und zum anderen durch die minimize Funktion im Scipy Modul von Python an. Als zweiten Alogrithmus versuchte ich den Conjugate Gradient Algorithmus wieder aus den Numerical Recipes und aus Scipy. Beide Implementierungen fanden für das gegebene Problem keine Lösung. Allerdings fand der Newton-CG Algorithmus aus Scipy eine gute Lösung, wie nachfolgender Tabelle entnommen werden kann.
+\begin{table}[H]\hspace*{-1.4cm}\begin{tabular}{c|c|c|c|c|c|c}Type&$N_{1}$&$\lambda_1$&$N_{2}$&$\lambda_2$&$A_\text{nat}$&$\chi^2$\\\hline\hline
+    simplex recipes&7491.150757 &    0.017192    &    81.765198  &     4.840988  &      16.202220&483.066\\
+    simplex scipy&5046.085& 2.828e-02& 5225.919& 4.258e-03&1.956e-12&134.157\\
+    Newton CG scipy&5010.452& 4.492e-03& 4995.188& 2.836e-02& 1.324&135.979\\
+\end{tabular}\caption{Ergebnisse der Anpassung für verschiedene Modelle}\end{table}
+Es ist anzumerken dass sich die Lösungen der verschiedenen Verfahren relativ deutlich unterscheiden, was auf eine geringe der Lösungen schließen lässt oder zumindest auf eine Uneindeutigkeit. Das minimale $\chi^2$ sind jedenfalls für die beiden Scipy Algorithmen ähnlich. Und auch die graphische Darstellung der beiden Lösungen sind nicht zu unterscheiden.
+
+\begin{figure}[H]\hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.4]{simplex_res.png}
+    \caption{simplex Algorithmus der Numerical Recipes}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{0.8cm}
+    \includegraphics[scale=0.4]{simplex_sci.png}
+    \caption{Nelder-Mean Algorithmus von Scipy}
+    \end{subfigure}
+    \hfill
+    \hspace*{-1.5cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.4]{Newton_CG.png}
+    \caption{Newton Conjugate Gradient Algorithmus von Scipy}
+    \end{subfigure}
+    \hfill
+    \caption{Darstellung der Regression duch die verschiedenen Optimierungsverfahren}
+\end{figure}
+
+\section{Evolutionäre Algorithmen}
+In diesem Abschnitt wird drei kurzes Anwendungsbeispiele für genetische Algorithmen vorgestellt. Zunächst soll das Maximum der Funktion 
+$$f(x,y)=\cos(9\pi\,r)\,\exp(-r^2/0.15)\quad\text{wobei }r^2=(x-0.5)^2+(y-0.5)^2$$
+Der genitische Alogrithmus des Python Moduls geneticalgorithm fand hier ein Maximum bei ungefähr $(x,y)=(0.5,0.5)$. Für verschiedene Mutationsraten war der Algorithmus im Grunde gleich erfolgreich.\newline\newline
+Mit einer Mutationsrate von 0.6 bestimmte er das Maximum auf 0.50004382, 0.49982225 und bei einer Mutationsrate von 0.1 auf 0.50003418, 0.49917879.
+\begin{figure}[H]\hspace*{-1.7cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{fit1_0.6.png}
+    \caption{MR = 0.6}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{fit1_01.png}
+    \caption{MR = 0.1}
+    \end{subfigure}
+    \hfill
+    \caption{Vortschrittsverlauf für die beiden Mutationsraten}
+\end{figure}
+
+% \begin{figure}[H]\centering\includegraphics[scale=0.6]{fit1_0.6.png}\caption{Vortschrittsverlauf für MR = 0.6}\end{figure}
+% Mit einer Mutationsrate von 0.1 wurde das Maximum bei 0.50003418, 0.49917879 gefunden.
+% \begin{figure}[H]\centering\includegraphics[scale=0.6]{fit1_01.png}\caption{Vortschrittsverlauf für MR = 0.1}\end{figure}
+\newpage
+Als zweite Funktion sollte 
+$$f(x,y)=0.8\,\exp(-r_1^2/0.3^2)+0.879008\,\exp(-r_2^2/0.03^2)$$
+mit $r_1^2=(x-0.5)^2+(y-0.5)^2$ und $r_2^2=(x-0.6)^2+(y-0.1)^2$ gefittet werden.\newline\newline
+Mit einer Mutationsrate von 0.5 wurde das Maximum auf 0.599861, 0.10051741 bestimmt, für MR=0.1 fand der Algorithmus das Maximum bei 0.59979587 0.10057644.
+\begin{figure}[H]\hspace*{-1.7cm}
+    \begin{subfigure}{0.4\textwidth}
+    \includegraphics[scale=0.55]{fit2_05.png}
+    \caption{MR = 0.5}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.4\textwidth}
+    \hspace*{-0.8cm}
+    \includegraphics[scale=0.55]{fit2_01.png}
+    \caption{MR = 0.1}
+    \end{subfigure}
+    \hfill
+    \caption{Vortschrittsverlauf für die beiden Mutationsraten}
+\end{figure}
+% \begin{figure}[H]\centering\includegraphics[scale=0.6]{fit2_05.png}\caption{Vortschrittsverlauf für MR = 0.5}\end{figure}
+% Mit einer Mutationsrate von 0.1 wurde das Maximum bei 0.59979587 0.10057644 gefunden.
+% \begin{figure}[H]\centering\includegraphics[scale=0.6]{fit2_01.png}\caption{Vortschrittsverlauf für MR = 0.1}\end{figure}
+
+\newpage
+Zulezt fitte ich noch an ein Datenset, das eine Lichtkurve representieren soll, eine Reihe an sinus-Funktionen, addiert mit einer Geraden-Funktion.
+$$f_\text{model}=a\,x+b+\sum_{m=0}^nA_m\,\sin(\frac{2\,\pi}{T_m}\,x+\phi_m)$$
+Die Standardabweichung der Datenpunkte soll 5 betragen. Wenn man sich den Datenverlauf anschaut, ekennt man ein periodisches Verhalten, dessen prominente Frequenz schon durch den Fit mit einer sinus Funktion eingefangen wird.
+
+\begin{table}[H]\centering\begin{tabular}{|c|c|c|c|c|c|}\hline
+    m&a&b&$A_m$&$T_m$&$\phi_m$\\\hline\hline
+    &1.003&19.137&&&\\
+1&&&11.374&20.118&3.305\\
+\hline
+\end{tabular}\caption{Parameter der Lösung der für n=1. Der beste Funktionswert wurde als 769.970 gefunden}\end{table}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{1sin.png}\caption{Datenpunkte mit der Regression durch 1 sinus Funktion}\end{figure}\newpage
+Wenn 2 sinus Funktionen gefittet werden, erkennt man schon eine deutlich bessere Anpassung an die Daten.
+\begin{table}[H]\centering\begin{tabular}{|c|c|c|c|c|c|}\hline
+    m&a&b&$A_m$&$T_m$&$\phi_m$\\\hline\hline
+    &1.065&15.917&&&\\
+1&&&11.139&20.097&3.242\\
+2&&&10.039&8.935&4.796\\
+\hline
+\end{tabular}\caption{Parameter der Lösung der für n=2. Der beste Funktionswert wurde als 395.124 gefunden}\end{table}
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{2sin.png}\caption{Datenpunkte mit der Regression durch 2 sinus Funktionen}\end{figure}
+Und bei drei sinus Funktionen wird die Anpassung noch einmal besser.
+\begin{table}[H]\centering\begin{tabular}{|c|c|c|c|c|c|}\hline
+    m&a&b&$A_m$&$T_m$&$\phi_m$\\\hline\hline
+    &1.001&19.304&&&\\
+    1&&&9.832&8.995&5.016\\
+    2&&&11.592&20.135&3.280\\
+    3&&&6.575&7.531&5.330\\
+\hline
+\end{tabular}\caption{Parameter der Lösung der für n=3. Der beste Funktionswert wurde als 181.261 gefunden}\end{table}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{3sin.png}\caption{Datenpunkte mit der Regression durch 3 sinus Funktionen}\end{figure}
+
+Für die Anpassung mit 4 sinus Funktionen sind die Ergebnisse nicht mehr so schön. Die Fitfunktion liegt zwar eng an den Daten an und auch das $\chi^2$ ist klein, allerdings ist die Periode der ersten sinus Funktion ungefähr so groß wie, der t-Abstand der Datenpunkte, was keinen großen Sinn ergibt. Außerdem wurden zwei sinus Funktionen mit sehr ähnlichen Frequenzen angenährt, wobei die Amplitude der ersten viel kleiner ist als die andere. Sie trägt daher nur wenig zur Anpassung bei, was darauf hindeuten kann, dass sie nicht wirklich eine Eigenschaft der Daten wiedergibt, sondern sich in einem Bereich bewegt der durch die Fehler wenig Aussagekraft ermöglicht.
+\begin{table}[H]\centering\begin{tabular}{|c|c|c|c|c|c|}\hline
+    m&a&b&$A_m$&$T_m$&$\phi_m$\\\hline\hline
+    &1.017&18.672&&&\\
+1&&&6.694&0.538&4.154\\
+2&&&11.454&20.388&3.462\\
+3&&&1.960&8.484&6.177\\
+4&&&10.826&8.911&4.679\\
+\hline
+\end{tabular}\caption{Parameter der Lösung der für n=4. Der beste Funktionswert wurde als 182.922 gefunden}\end{table}
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{4sin.png}\caption{Datenpunkte mit der Regression durch 4 sinus Funktionen}\end{figure}
+Beim Ergebnis für 5 angepasste sinus Funktionen erkennen wir ungefähr dieselben Frequenzen wie bei der Anpassung mit 3 sinus Funktionen wieder. Es sind noch zwei Funktionen hinzugekommen mit ungefähr gleicher Amplitude und Frequenz aber Phasendifferenz von ungefähr $\pi$. Diese heben sich also gegenseitig weg, und tragen nicht zur Lösung bei. Die letzten beiden Ergebnisse zeigten eindeutige schwächen, die schließen lassen, dass der Fit mit 3 sinus Funktionen die Daten am besten representiert. In der Tat wurden die Daten auch mit 3 sinus Funktionen erzeugt.
+\begin{table}[H]\centering\begin{tabular}{|c|c|c|c|c|c|}\hline
+    m&a&b&$A_m$&$T_m$&$\phi_m$\\\hline\hline
+    &1.028&17.902&&&\\
+1&&&13.651&25.323&0.635\\
+2&&&9.636&9.039&5.149\\
+3&&&6.644&7.436&4.796\\
+4&&&11.098&19.899&3.078\\
+5&&&12.635&25.593&3.997\\\hline
+\end{tabular}\caption{Parameter der Lösung der für n=5. Der beste Funktionswert wurde als 176.626 gefunden}\end{table}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{5sin.png}\caption{Datenpunkte mit der Regression durch 5 sinus Funktionen}\end{figure}
+
+
+\newpage
+\section{Bewegung von Elektronen durch Materie}
+Wir unterscheiden als Wechselwirkung der Elektronen mit der penetrierten Materie zwischen zwei verschiedenen Streuungstypen, Mott Streuung und Møller Streuung.
+Der differentielle Wirkungsquerschnitt für Mottstreuung hat folgende Form.
+$$\left(\frac{\partial\sigma}{\partial\vartheta}\right)_\text{Mott}\propto\frac{1}{T}\,\left(\frac{1}{\sin^4\frac{\vartheta}{2}}-\beta\,\frac{1}{\sin^2\frac{\vartheta}{2}}\right)$$
+Hier streut das Elektron am schweren Kern des Materiestoffes. Da der Kern wesentlich schwerer als das Elektron. Ist das Schwerpunktsystem in guter Näherung das Laborsystem in dem der Kern ruht.
+Für Møller Streuung von Elektronen mit Elektronen ist dies nicht der Fall.
+$$\left(\frac{\partial\sigma}{\partial\vartheta}\right)_\text{Møller}=\frac{\alpha^2}{4E_\text{CM}^2\,\sin^4\vartheta}\,\left(3+\cos^2\vartheta\right)^2$$
+Hier müssen wir ins Schwerpunktsystem und wieder zurück transformieren. Dabei interessiert uns vor allem die Änderung der kinetischen Energie T sowie der Streuwinkel im Laborsystem. Um ins Schwerpunktsystem zu transformieren, müssen wir die Boost Geschwindigkeit so wählen, dass Schwerpunktsgeschwindigkeiten der beiden Elektronen a, b gilt
+\begin{align*}
+    v_{a,\text{CM}}=-v_{b,\text{CM}}
+    \frac{\gamma_B\,\left(\gamma_a\,v_a-V_B\,\gamma_a\right)}{\gamma_B\,\left(\gamma_a-\frac{V_B\,\gamma_a\,v_a}{c^2}\right)}=-\frac{\gamma_B\left(-V_B\,\gamma_b\right)}{\gamma_B\,\gamma_b}
+\end{align*}
+wobei $\gamma$ der Lorentzfaktor für die jeweilige Geschwindigkeit ist ($v_b=0$).
+Daraus erhält man
+$$V_B=\frac{c^2}{v_a}\,\left(1-\sqrt{1-\frac{v_a^2}{c^2}}\right)$$
+Das Verfahren sieht nun so aus, dass ich zuerst das Labor system so drehe, dass der Impuls in Richtung z-Achse zeigt, danach den Impuls nach obiger Transformation ins Schwerpunktsystem transformiere, den Winkel gemäß des Streuvorgangs verändere, und dann wieder zurück gedrehte Laborsystem transformiere, von dem ich zum Schluss wieder ins ursprüngliche System wechsele.
+Um das Koordinatensystem so zu drehen, dass die z-Achse danach in Richtung eines Vektors
+$$\hat{e}_r=\left(\begin{array}{c}\sin\vartheta\,\cos\varphi\\\sin\vartheta\,\sin\varphi\\\cos\vartheta\end{array}\right)$$
+zeigt, muss folgende Koordinatentransformation durchgeführt werden.
+\begin{align*}
+    \bm{x'}=&R_y(\vartheta)\cdot{R_z}(-\varphi)\cdot\bm{x}\\
+    =&\left(\begin{array}{c c c}\cos\vartheta&0&-\sin\vartheta\\
+        0&1&0\\
+        \sin\vartheta&0&\cos\vartheta
+    \end{array}\right)\,\left(\begin{array}{c c c}\cos\vartheta&\sin\vartheta&0\\
+        -\sin\vartheta&\cos\vartheta&0\\
+        0&0&1
+    \end{array}\right)\,\bm{x}
+\end{align*}
+Für die Rücktransformation muss folglich mit $R_z(\varphi)\,R_y(\-vartheta)$ multiplisiert werden. Es müssen natürlich alle oben beschriebenen Schritte explizit ausgeführt werden. Im Programm besitze ich die aktuelle Orientierung des Impulsvektors des Elektrons, ich bestimme den neuen Winkel $\vartheta$ im gedrehten Laborsystem durch die oben beschriebene Lorenzt-Schwerpunktstransformation und Rücktransformation und einen beliebigen Winkel $\varphi$. Diese Richtung lässt sich leicht im gedrehten Koordinatensystem darstellen durch den Vektor $\hat{e}_r$ und danach kann ich mit Winkeln der ursprünglichen Orientierung des Impulses wieder ins feste Laborsystem zurücktransformieren.
+\newline\newline
+Der Algorithmus hat folgende generelle Form:
+\begin{itemize}
+    \item zunächst wird eine gewisse freie Weglänge bestimmt
+    \item danach wird ausgewählt, ob Mott oder Møller Streuung stattfinden soll. In diesem Programm soll vereinfachend angenommen werden, dass beide Streuarten gleichhäufig auftreten.
+    \item gemäß der gewählten Streuart wird ein Streuwinkel bestimmt.
+    \item Es werden Impuls und kinetische Energie aktualisiert.
+    \item und es wird dann ein neuer Durchgang gestartet, in dem immer nach Bestimmung der freien Weglänge die Position des Elektrons aktualisiert wird.
+\end{itemize}
+
+In diesem Programm müssen einige Werte nach einer gewissen Wahrscheinlichkeitsverteilung gezogen werden. Deshalb stellt sich die Frage wie man eine aus einer Gleichverteilung eine Verteilung generiert die einer gewissen Wahrscheinlichkeitfunktion $p(x)$ $x\in{D}$ (Definitionsmenge) entspricht. Die Wahrscheinlichkeit einen Wert im Intervall $(a,b)\subseteq{D}$ zu ziehen, ist 
+$$\int_a^bp(x)\,dx=\frac{F_p(b)-F_p(a)}{\int_Dp(x)\,dx}$$
+mit der Stammfunktion von p $F_p$. Die Wahrscheilichkeit einen Wert im Intervall $(a,b)$ gemäß der Wahrscheinlichkeit $p(x)$ zu ziehen ist also gleich der Wahrscheinlichkeit einen Wert im Intervall $(F_p(a),F_p(b))$ gleichverteilt zu ziehen. Dies führt sich infinetissimal dazu fort, dass die Wahrscheinlichkeit den Wert $F_p(x)$ zu ziehen jener entspricht den Wert x nach der Wahrscheinlichkeitsverteilung $p(x)$ zu ziehen. 
+Im Fall, dass es für die Wahrscheinlichkeitsfunktion keine Stammfunktion hat, geht man so vor, dass man eine integrierbare einhüllende $f(x)$ ($F\vcentcolon=\int_Df(x)\,dx$) wählt, mit deren Hilfe man nach obigem Verfahren Vorgschlagswerte konstruiert und diese akzeptiert mit Verhältnis, wie nah p an dieser Stelle an f ist. Wenn man für die Akzeptanzwahrscheinlichkeit 
+$$p_\text{akz}=\frac{p(x)}{f(x)}\,\frac{\int_Df(x)\,dx}{\int_Dp(x)\,dx}\vcentcolon=\frac{p(x)}{f(x)}\,\frac{N_f}{N_p}$$
+wählt erhält man für die Gesamtwahrscheinlichkeit einen Punkt x zu ziehen
+$$p_\text{ges}=p_\text{Vorschlag}\,p_\text{akz}=\frac{f(x)}{N_f}\,dx\,\frac{p(x)}{f(x)}\,\frac{N_f}{N_p}=\frac{p(x)}{N_p}\,dx,$$
+die gewünschte Wahrscheinlichkeit.
+Nach Vorstellung des Verfahrens möchte ich nun einen Blick auf die Wahrscheinlichkeitsfunktionen werfen. Zur Berechnung der Wahrscheinlichkeitsfunktion der freien Weglänge, verwenden wir, dass die Wahrscheinlichkeit in einem Volumen mit der Tiefe $\Delta{x}$ zu Stoßen gleich dem Verhältnis von durch Streuquerschnitt abgedeckter Fläche zur Querschnittsfläche des Volumens ist.
+$$\tilde{p}(\Delta{x})=\varrho\,V\,\sigma/A=\varrho\,\sigma\,\Delta{x}\vcentcolon=\lambda\,\Delta{x}$$
+Wenn wir die Strecke durch die Materie nun quantisieren, erhalen wir für die Wahrscheinlichkeit, \newline
+dass das Teilchen im Wegstreckenintervall $(n\,\Delta{x},(n+1)\Delta{x})$ stößt
+\begin{align*}
+    p(n\Delta{x},(n+1)\Delta{x})=&\vcentcolon{p}(x=n\Delta{x})\,dx\\
+    =&\frac{1}{N(range)}\Pi_n\left(1-p(\Delta{x})\right)p(\Delta{x})\\
+    =&\frac{1}{N(range)}\left(1-\frac{\lambda\,n\Delta{x}}{n}\right)^np(\Delta{x})\\
+    =&\frac{1}{N(range)}\left(1-\frac{\lambda\,x}{n}\right)^n\lambda\Delta{x},
+\end{align*}
+wobei $N(range)$ eine vom erlaubten Bereich von x abhängt. Wenn wir nun $\Delta{x}\rightarrow{dx};\quad n\rightarrow\infty$ gehen lassen erhalten wir
+$$p(x)\,dx=\lambda\,e^{-\lambda\,x}\,dx$$
+und mit Normierung für $x\in(0,\infty)$
+$$p(x)\,dx=\frac{1}{\lambda}\,e^{-\lambda\,x}\,dx$$
+
+Bei Betrachtung der differenziellen Streuquerschnitte für Mott und Møller Streuung stellen wir fest, dass diese nicht integrierbar sind, da das Integral über den Raumwinkel divergiert. Im Grunde genommen beinhalten diese Streuquerschnitte deshalb keine Wahrscheilichkeitsaussage. Wenn wir diese differenziellen Streuquerschnitte dennoch verwenden wollen, müssen wir den divergenten Teil abschneiden. Ich habe die Simulation für verschiedene cut-off-Winkel druchgeführt.
+Außerdem wurde in diesem Algorithmus ein Energieübertrag für einen Winkel $\theta<0.2$ vernachlässtigt, und in diesem Fall Energie und Impuls gleich belassen. Es wurde hingegen immer kontinuirlich T reduziert nach einem Verhältnis
+$$\frac{dT}{dx}\propto-\frac{x}{T}.$$
+Den Wert von $\lambda$ habe ich mit Daten aus dem Internet auf $2.5\cdot10^9\,m^{-1}$ abgeschätzt. Da der Proportionalitätsfaktor a des CSDA allerdings auch nicht gegeben ist und die cut-off-Winkels auch willkürlich ist, belasse ich es hier bei einer unspezifischen Simulation, bei der nur die Form der Elektronenbahn eingefangen werden soll. Als kinetische Startenergie wurde $T=20\,MeV$ verwendet.
+
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{2d_0.0004.png}\caption{2D Schnitt der  Elektronen Bahn für cut-off-Winkel \newline$\theta_\text{cut}=0.0004$, $a=10^6$}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.8]{3d_0.0004.png}\caption{3D Schnitt der  Elektronen Bahn für dieselben Parameter}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{2d_0.0008.png}\caption{2D Schnitt der  Elektronen Bahn für cut-off-Winkel \newline$\theta_\text{cut}=0.0008$, $a=10^6$}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.8]{3d_0.0008.png}\caption{3D Schnitt der  Elektronen Bahn für dieselben Parameter}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.6]{2d_0.0016.png}\caption{2D Schnitt der  Elektronen Bahn für cut-off-Winkel \newline$\theta_\text{cut}=0.0016$, $a=10^6$}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[scale=0.8]{3d_0.0016.png}\caption{3D Schnitt der  Elektronen Bahn für dieselben Parameter}\end{figure}
+        
+Wie in den Schaubildern zu erkenn, hängt das Maß an Ablenkung der Elektronen logischer Weise vom cut-off-Winkel ab. Es lässt sich noch anmerken, dass als prägnanter Unterschied zur Anmutung echter Elektronenbahnen auffällt, dass es keine $"$Verzweigungen$"$ gibt. Das lässt sich dadurch erklären, dass in unserer Simulation die Elektronen völlig unabhängig von einander sind, und jeweils ein vollkommen unberührtes Medium vorfinden. Es gibt hier keine Effekte, die mit einer Veränderung des Mediums durch ein vorheriges Elektron hervorgerufen werden.
+
+
+
+\section{Fazit}
+Wir machten uns in dieser Aufgaben Serie an mehreren Beispielen mit einigen Optimierungsverfahren sowie deren Schwächen vertraut. Es wurde für mich deutlich, dass das Scipy modul ein wirklich starkes und einfach handhabbares Werkzeug ist. Auch die Verwendung von evolutionären Algorithmen brachte akzeptable Ergebnisse hervor. Im zweiten Teil Simulierten wir die Beswegung von Elektronen durch Materie, was aufgrund der notwendigen räumlichen Vorstellung für die Koordinatendrehung und die Wiederholung relativistischer Beziehungen Spaß machte. Am Ende war auch das Ergebnis zufriedenstellend, und die erzeugte Elektronenbahn hatte die erwartete Form.
+
+
+
+
+
+
+
+
+
+
+    \end{document}
